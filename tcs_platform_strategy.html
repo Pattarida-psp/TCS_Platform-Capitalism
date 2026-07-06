@@ -1,0 +1,837 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>PRECISE • TCS Platform Strategy</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=IBM+Plex+Sans+Thai:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --navy:#0B2545; --navy-2:#13315C; --teal:#1C7293; --teal-2:#2E8B9E;
+    --amber:#F2A541; --ice:#CFE8F3; --ice-2:#9FCBE0; --slate:#5B6B7C;
+    --bg-light:#F7F9FB; --bg-light-2:#EAF0F6;
+    --indigo:#1B2A63; --indigo-bg:#EAEDF8;
+    --purple:#4B2E83; --purple-bg:#EFE7F7;
+    --red:#C0392B; --red-bg:#FBE4E4;
+  }
+  *{box-sizing:border-box; margin:0; padding:0;}
+  html,body{height:100%;}
+  body{ font-family:'IBM Plex Sans Thai', sans-serif; color:var(--navy); background:var(--navy); overflow:hidden; }
+  .disp{font-family:'Space Grotesk','IBM Plex Sans Thai',sans-serif;}
+  ::selection{background:var(--amber); color:var(--navy);}
+
+  #deck{ position:relative; width:100vw; height:100vh; overflow:hidden; background:var(--bg-light); }
+  .slide{
+    position:absolute; inset:0; padding:4.6vh 6.5vw 4vh; display:flex; flex-direction:column;
+    overflow-y:auto; transition:transform .6s cubic-bezier(.22,.61,.36,1), opacity .5s ease;
+  }
+  .slide::-webkit-scrollbar{width:6px;}
+  .slide::-webkit-scrollbar-thumb{background:rgba(11,37,69,.15); border-radius:10px;}
+  .slide.dark{background:var(--navy); color:#fff;}
+  .slide.light{background:var(--bg-light);}
+  .slide.alt{background:var(--bg-light-2);}
+  .slide.white{background:#fff;}
+
+  .eyebrow{ font-family:'Space Grotesk',sans-serif; font-weight:600; letter-spacing:.2em; font-size:.72rem; color:var(--amber); margin-bottom:10px; text-transform:uppercase; }
+  .sec-title{ font-size:clamp(1.5rem, 2.6vw, 2.2rem); font-weight:700; line-height:1.25; max-width:900px; margin-bottom:6px;}
+  .sec-sub{ font-size:.92rem; color:var(--slate); max-width:760px; font-style:italic; margin-bottom:1.4rem;}
+  .slide.dark .sec-sub{color:#B9C6D6;}
+
+  .anim{ opacity:0; transform:translateY(22px); transition:opacity .55s cubic-bezier(.22,.61,.36,1), transform .55s cubic-bezier(.22,.61,.36,1); }
+  .anim.in{ opacity:1; transform:translateY(0); }
+  .anim.pop{ transform:scale(.88); }
+  .anim.pop.in{ transform:scale(1); }
+  .stagger .anim:nth-child(1){transition-delay:.03s;} .stagger .anim:nth-child(2){transition-delay:.10s;}
+  .stagger .anim:nth-child(3){transition-delay:.17s;} .stagger .anim:nth-child(4){transition-delay:.24s;}
+  .stagger .anim:nth-child(5){transition-delay:.31s;} .stagger .anim:nth-child(6){transition-delay:.38s;}
+  .stagger .anim:nth-child(7){transition-delay:.45s;}
+
+  #progress-track{ position:fixed; top:0; left:0; right:0; height:3px; background:rgba(11,37,69,.08); z-index:600;}
+  #progress-fill{ height:100%; width:0%; background:var(--amber); transition:width .5s cubic-bezier(.22,.61,.36,1);}
+  #dot-nav{ position:fixed; right:22px; top:50%; transform:translateY(-50%); z-index:600; display:flex; flex-direction:column; gap:12px; }
+  .dot{ width:9px; height:9px; border-radius:50%; background:rgba(11,37,69,.22); cursor:pointer; transition:all .3s ease;}
+  .dot:hover{background:rgba(11,37,69,.45);}
+  .dot.active{ background:var(--amber); transform:scale(1.4); }
+  #dot-nav.on-dark .dot{background:rgba(255,255,255,.28);}
+  #dot-nav.on-dark .dot:hover{background:rgba(255,255,255,.5);}
+  #dot-nav.on-dark .dot.active{background:var(--amber);}
+  #bottom-nav{
+    position:fixed; left:50%; bottom:20px; transform:translateX(-50%); z-index:600;
+    display:flex; align-items:center; gap:16px; background:rgba(255,255,255,.9); backdrop-filter:blur(8px);
+    padding:.5rem .9rem; border-radius:40px; box-shadow:0 8px 26px -10px rgba(11,37,69,.35);
+  }
+  .nav-btn{ width:34px; height:34px; border-radius:50%; border:none; background:var(--navy); color:#fff; cursor:pointer; display:flex; align-items:center; justify-content:center; transition:background .25s ease, transform .2s ease;}
+  .nav-btn:hover{background:var(--teal); transform:scale(1.06);}
+  .nav-btn:disabled{opacity:.3; cursor:not-allowed; transform:none;}
+  .nav-btn svg{width:16px; height:16px;}
+  #slide-count{ font-family:'Space Grotesk'; font-size:.82rem; color:var(--navy); font-weight:600; min-width:52px; text-align:center;}
+  @media(max-width:720px){ #dot-nav{display:none;} .slide{padding:9vh 6vw 11vh;} }
+
+  /* ================= HERO ================= */
+  #s-hero{ justify-content:center; background:radial-gradient(ellipse at 75% 30%, #123a63 0%, var(--navy) 55%); }
+  .hero-grid{ display:grid; grid-template-columns:1.15fr .85fr; gap:4vw; align-items:center; width:100%; }
+  .hero-title{ font-size:clamp(2rem, 4vw, 3.3rem); font-weight:700; line-height:1.18; color:#fff; }
+  .hero-title b{color:var(--ice-2); font-weight:700;}
+  .hero-title .to{color:var(--amber);}
+  .hero-desc{ margin-top:1.4rem; font-size:1rem; line-height:1.8; color:#C7D3E0; max-width:560px; }
+  .berg-wrap{ position:relative; height:min(38vh,380px); display:flex; align-items:center; justify-content:center; }
+  .berg-wrap svg{width:100%; max-width:340px; overflow:visible;}
+  .berg-tip{ transform-origin:center bottom; animation:bob 5s ease-in-out infinite; }
+  .berg-base{ transform-origin:center top; animation:bob2 5s ease-in-out infinite; }
+  @keyframes bob{0%,100%{transform:translateY(0);}50%{transform:translateY(-6px);}}
+  @keyframes bob2{0%,100%{transform:translateY(0);}50%{transform:translateY(4px);}}
+  .waterline{ stroke-dasharray:4 4; animation:dash 3s linear infinite;}
+  @keyframes dash{to{stroke-dashoffset:-16;}}
+  .berg-label.top{fill:var(--navy); font-weight:600;}
+  .berg-label.bottom{fill:#fff; font-weight:600;}
+  .hero-hint{ margin-top:2.2rem; display:flex; align-items:center; gap:.5rem; color:#8CA3BE; font-size:.78rem;}
+  .hero-hint svg{width:14px;height:14px; animation:nudge 1.6s ease-in-out infinite;}
+  @keyframes nudge{0%,100%{transform:translateX(0);}50%{transform:translateX(5px);}}
+
+  /* ================= WHY PLATFORM ================= */
+  #s-why{ padding-top:2.6vh; }
+  .why-h1{ font-family:'Space Grotesk'; font-weight:800; font-size:1.5rem; color:var(--teal); letter-spacing:.01em; margin-bottom:.6rem;}
+  .why-subheads{ display:grid; grid-template-columns:1.2fr .85fr 1.2fr; gap:1rem; margin-bottom:.6rem; }
+  .why-subheads h3{ text-align:center; font-size:1.15rem; font-weight:700; color:var(--navy);}
+  @media(max-width:1080px){ .why-subheads{display:none;} }
+
+  .why-columns{ display:grid; grid-template-columns:1.2fr .85fr 1.2fr; gap:1.4rem; align-items:stretch; flex:1; min-height:0; }
+  @media(max-width:1080px){ .why-columns{grid-template-columns:1fr; } }
+
+  .outer-card{ background:#fff; border-radius:16px; box-shadow:0 8px 26px -16px rgba(11,37,69,.25); overflow:hidden; display:flex; flex-direction:column; height:100%;}
+  .outer-head{ font-family:'Space Grotesk'; font-weight:700; font-size:.95rem; text-align:center; padding:.8rem;}
+  .outer-head.then{background:var(--slate); color:#fff;}
+  .outer-head.next{background:var(--teal); color:#fff;}
+  .outer-body{ flex:1; display:grid; grid-template-columns:1fr 1fr; gap:1.1rem; padding:1.3rem;}
+
+  .flow-mini{display:flex; flex-direction:column; justify-content:center; gap:0; height:100%;}
+  .flow-step{ background:var(--bg-light-2); border-radius:10px; padding:.65rem .85rem; text-align:center; font-size:.76rem; line-height:1.35;}
+  .flow-step b{display:block; font-size:.8rem;}
+  .flow-step.end{background:var(--red-bg);}
+  .flow-step.end b{color:var(--red);}
+  .flow-arrow{ text-align:center; font-size:.78rem; color:var(--slate); line-height:1.1; padding:.2rem 0;}
+
+  .plain-rows{display:flex; flex-direction:column; height:100%; justify-content:center; gap:.45rem;}
+  .plain-row{ display:flex; align-items:center; justify-content:space-between; gap:.5rem; padding:.5rem 0; border-bottom:1px dashed #E4E9EF;}
+  .plain-row:last-child{border-bottom:none;}
+  .plain-row .txt b{ display:block; font-size:.78rem; text-decoration:underline; text-underline-offset:3px;}
+  .plain-row .txt span{ display:block; font-size:.72rem; color:var(--slate);}
+  .status-dot{ flex:0 0 22px; height:22px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:.76rem; color:#fff; font-weight:700;}
+  .status-dot.yes{background:var(--navy);}
+  .status-dot.no{background:var(--red); animation:redpulse 2.2s ease-in-out infinite;}
+  @keyframes redpulse{0%,100%{box-shadow:0 0 0 0 rgba(192,57,43,.4);}50%{box-shadow:0 0 0 6px rgba(192,57,43,0);}}
+
+  .revenue-rows{display:flex; flex-direction:column; gap:.48rem; height:100%; justify-content:center;}
+  .rev-row{ position:relative; border-radius:9px; padding:.55rem .75rem .55rem 1.8rem; font-size:.76rem; color:#fff;}
+  .rev-row b{display:block; font-size:.8rem;}
+  .rev-row.base{background:var(--navy);}
+  .rev-row.rec{background:var(--teal);}
+  .rev-row.carbon{background:#C98A3D;}
+  .rev-row.long{background:var(--amber); color:var(--navy);}
+  .pulse-dot{ position:absolute; left:.7rem; top:50%; width:7px; height:7px; margin-top:-3.5px; border-radius:50%; background:#fff;}
+  .rev-row.long .pulse-dot{background:var(--navy);}
+  .rev-row.rec .pulse-dot, .rev-row.carbon .pulse-dot, .rev-row.long .pulse-dot{ animation:pulseDot 1.8s ease-in-out infinite; }
+  @keyframes pulseDot{ 0%,100%{transform:scale(1); opacity:1;} 50%{transform:scale(2); opacity:.4;} }
+
+  .cycle-radial{ position:relative; width:100%; height:100%; min-height:260px; }
+  .cycle-radial svg{position:absolute; inset:0; width:100%; height:100%;}
+  .cycle-arrow{ animation:rotateArrow 4s linear infinite; transform-origin:50% 48%; }
+  @keyframes rotateArrow{ to{ stroke-dashoffset:-210; } }
+  .cnode{ position:absolute; font-size:.7rem; text-align:center; line-height:1.3; width:104px;}
+  .cnode b{display:block; font-size:.76rem; color:var(--navy);}
+  .cnode.n1{top:0%; left:50%; transform:translateX(-50%);}
+  .cnode.n2{top:24%; right:-8%; text-align:right;}
+  .cnode.n3{bottom:16%; right:-8%; text-align:right;}
+  .cnode.n4{bottom:0%; left:50%; transform:translateX(-50%);}
+  .cnode.n5{bottom:16%; left:-8%; text-align:left;}
+  .crecycle{ position:absolute; top:50%; left:50%; transform:translate(-50%,-50%); width:38px; height:38px; border-radius:50%; background:var(--teal); color:#fff; display:flex; align-items:center; justify-content:center; box-shadow:0 8px 18px -8px rgba(28,114,147,.6); z-index:2;}
+  .crecycle svg{width:19px;height:19px;}
+
+  .mid-col{ display:flex; flex-direction:column; align-items:center; gap:.6rem; height:100%; }
+  .vs-text{ font-family:'Space Grotesk'; font-weight:800; font-size:1.9rem; color:var(--navy); flex:0 0 auto;}
+  .iceberg-row{ flex:1; min-height:0; width:100%; display:flex; align-items:stretch; justify-content:center; gap:.6rem; }
+  .iceberg-icons{ display:flex; flex-direction:column; justify-content:space-between; padding:6% 0; flex:0 0 38px;}
+  .iceberg-icons .ic{width:38px; height:38px; border-radius:50%; background:var(--navy); color:#fff; display:flex; align-items:center; justify-content:center;}
+  .iceberg-icons .ic svg{width:20px;height:20px;}
+  .iceberg-icons .ic:nth-child(1){background:var(--navy);}
+  .iceberg-icons .ic:nth-child(2){background:#2E8B9E;}
+  .iceberg-icons .ic:nth-child(3){background:#2E8B9E;}
+  .iceberg-icons .ic:nth-child(4){background:#1C7293;}
+  .iceberg-icons .ic:nth-child(5){background:#166477;}
+  .iceberg-frame{ position:relative; flex:1; min-height:0; display:flex; align-items:center; justify-content:center; }
+  .iceberg-frame img{ max-width:100%; max-height:100%; width:auto; height:100%; object-fit:contain; border-radius:10px; box-shadow:0 14px 34px -20px rgba(11,37,69,.35); }
+
+  /* ---- charts ---- */
+  .charts-wrap{ display:grid; grid-template-columns:1.2fr .85fr 1.2fr; gap:1rem; margin-top:.7rem; }
+  @media(max-width:1080px){ .charts-wrap{grid-template-columns:1fr;} }
+  .chart-card{ background:#fff; border-radius:12px; padding:.6rem .8rem .4rem; box-shadow:0 8px 22px -16px rgba(11,37,69,.2); position:relative;}
+  .chart-card h4{font-family:'Space Grotesk'; font-size:.66rem; color:var(--slate); margin-bottom:.1rem; text-align:center; font-weight:600;}
+  .chart-stack{display:flex; flex-direction:column; gap:.35rem; height:100%; justify-content:center;}
+  .line-svg{width:100%; height:100%; display:block;}
+  .line-path{ transition:stroke-dashoffset 1.3s cubic-bezier(.22,.61,.36,1); }
+  .area-path{ opacity:0; transition:opacity 1s ease .5s; }
+  .area-path.in{opacity:1;}
+  .chart-legend{display:flex; gap:.7rem; justify-content:center; margin-top:.15rem; font-size:.58rem; color:var(--slate);}
+  .chart-legend span{display:inline-flex; align-items:center; gap:.25rem;}
+  .chart-legend i{width:8px; height:2.4px; border-radius:2px; display:inline-block;}
+  .callout-badge{ position:absolute; top:2px; right:6px; background:var(--amber); color:var(--navy); font-family:'Space Grotesk'; font-weight:700; font-size:.7rem; padding:.36rem .7rem; border-radius:30px; box-shadow:0 8px 16px -8px rgba(242,165,65,.6); opacity:0; transform:scale(.7); transition:opacity .45s ease, transform .45s cubic-bezier(.34,1.56,.64,1); z-index:2;}
+  .callout-badge.in{opacity:1; transform:scale(1);}
+  .footnote{ font-size:.6rem; color:var(--slate); line-height:1.5; margin-top:.7rem; margin-bottom:2.4rem; font-style:italic; }
+
+  /* ---- dedicated big charts page ---- */
+  #s-charts{ padding-top:3vh; }
+  .big-charts-wrap{ display:grid; grid-template-columns:1fr 1fr; gap:1.4rem; flex:1; min-height:0; }
+  @media(max-width:1080px){ .big-charts-wrap{grid-template-columns:1fr;} }
+  .big-chart-col{ display:flex; flex-direction:column; }
+  .big-chart-head{ font-family:'Space Grotesk'; font-weight:700; font-size:1rem; text-align:center; padding:.7rem; border-radius:10px; margin-bottom:1.2rem;}
+  .big-chart-head.then{background:var(--slate); color:#fff;}
+  .big-chart-head.next{background:var(--teal); color:#fff;}
+  .big-chart-body{ position:relative; flex:1; min-height:280px; display:flex; align-items:stretch; gap:.4rem; }
+  .axis-label{ writing-mode:vertical-rl; transform:rotate(180deg); font-size:.66rem; color:var(--slate); display:flex; align-items:center; justify-content:center; flex:0 0 16px;}
+  .big-chart-canvas{ flex:1; min-width:0; height:100%; }
+  .chart-legend.big{ display:flex; gap:1.4rem; justify-content:center; margin-top:.8rem; font-size:.76rem; color:var(--slate);}
+  .chart-legend.big i{width:11px; height:11px; border-radius:2px;}
+
+  /* ================= END-WAY-MEAN ================= */
+  .ewm-grid{display:grid; grid-template-columns:repeat(3,1fr); gap:1.2rem; margin-top:1.4rem; align-items:start; align-content:center; flex:1;}
+  @media(max-width:900px){.ewm-grid{grid-template-columns:1fr;}}
+  .ewm-card{ border-radius:14px; overflow:hidden; box-shadow:0 10px 30px -18px rgba(11,37,69,.3); transition:transform .35s ease;}
+  .ewm-card:hover{transform:translateY(-6px);}
+  .ewm-head{padding:1.1rem 1.2rem;color:#fff;}
+  .ewm-card:nth-child(1) .ewm-head{background:var(--navy);}
+  .ewm-card:nth-child(2) .ewm-head{background:var(--teal);}
+  .ewm-card:nth-child(3) .ewm-head{background:var(--navy-2);}
+  .ewm-icon{width:30px; height:30px; margin-bottom:.6rem;}
+  .ewm-head h3{font-family:'Space Grotesk'; font-size:1.15rem; letter-spacing:.05em;}
+  .ewm-head span{font-size:.76rem; opacity:.85;}
+  .ewm-body{background:var(--bg-light); padding:1.1rem 1.2rem; font-size:.82rem; line-height:1.65; color:var(--navy-2);}
+
+  /* ================= PLATFORM CORE (native rebuild) ================= */
+  #s-core{ padding-left:3.4vw; padding-right:3.4vw; }
+  .core-rail{ display:flex; flex-direction:row; gap:.5rem; margin-bottom:.5rem; align-items:stretch; flex-shrink:0;}
+  .core-rail .lbl{ writing-mode:vertical-rl; transform:rotate(180deg); font-family:'Space Grotesk'; font-weight:700; font-size:.95rem; color:var(--navy); display:flex; align-items:center; justify-content:center; padding:.4rem;}
+  .pillars{ display:flex; gap:.5rem; flex:1;}
+  .pillar{ flex:1; border-radius:10px; padding:.5rem .4rem; color:#fff; font-size:.62rem; text-align:center; display:flex; flex-direction:column; align-items:center; gap:.2rem;}
+  .pillar b{font-size:.66rem; display:block;}
+  .pillar .num{font-family:'Space Grotesk'; font-weight:800; font-size:.9rem; opacity:.85;}
+  .pillar.p1{background:#1B3A6B;} .pillar.p2{background:#D9711A;} .pillar.p3{background:#5A3E85;} .pillar.p4{background:#2F7D4F;} .pillar.p5{background:#C23B5A;}
+
+  .platforms-row{ display:flex; gap:.5rem; align-items:stretch; margin-bottom:.45rem; flex-shrink:0; }
+  .plat-box{ flex:1; background:#fff; border-radius:12px; box-shadow:0 8px 22px -16px rgba(11,37,69,.25); overflow:hidden; display:flex; flex-direction:column;}
+  .plat-head{ padding:.5rem .7rem; color:#fff;}
+  .plat-head.tech{background:var(--navy);}
+  .plat-head.comm{background:var(--purple);}
+  .plat-head b{font-family:'Space Grotesk'; font-size:.82rem; display:block;}
+  .plat-head .kv{font-size:.6rem; color:var(--amber); font-weight:600;}
+  .plat-body{padding:.6rem .7rem; display:flex; gap:.6rem; flex:1;}
+  .subplat.value-focus{ flex:1; border:1px solid #E4E9EF; border-radius:12px; padding:1rem .8rem; display:flex; flex-direction:column; align-items:center; justify-content:center; text-align:center; gap:.4rem; background:linear-gradient(180deg,#fff,#F7F9FB);}
+  .subplat-icon{width:38px; height:38px; border-radius:50%; background:var(--indigo-bg); color:var(--indigo); display:flex; align-items:center; justify-content:center;}
+  .subplat-icon svg{width:20px;height:20px;}
+  .subplat.value-focus h5{font-size:.78rem; color:var(--navy); font-weight:700; line-height:1.3;}
+  .subplat.value-focus span{display:block; font-weight:500; color:var(--slate); font-size:.68rem;}
+
+  .comm-body{ display:flex; flex-direction:column; gap:.4rem; flex:1; padding:.55rem .6rem;}
+  .comm-grid{display:grid; gap:.35rem;}
+  .comm-grid.g3{grid-template-columns:repeat(3,1fr);}
+  .comm-grid.g6{grid-template-columns:repeat(6,1fr);}
+  .comm-chip{border:1px solid #E9E3F2; border-radius:8px; padding:.32rem .4rem; font-size:.54rem; font-weight:600; color:var(--navy-2); text-align:center; line-height:1.25;}
+
+  .connector-col{ flex:0 0 190px; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:.5rem; position:relative;}
+  .connector-title{font-family:'Space Grotesk'; font-weight:700; font-size:.68rem; color:var(--navy); text-align:center; letter-spacing:.03em;}
+  .connector-sub{font-size:.54rem; color:var(--slate); text-align:center; margin-bottom:.15rem;}
+  .connector-icons{display:flex; flex-wrap:wrap; gap:.3rem; justify-content:center; width:100%;}
+  .core-hub{ display:flex; align-items:center; justify-content:center; margin-top:.5rem; }
+  .hub-line{ width:16px; height:0; border-top:2px dashed #9FB4C9; position:relative; flex:0 0 auto; }
+  .hub-dot{ width:7px; height:7px; border-radius:50%; background:var(--teal); position:absolute; top:50%; transform:translateY(-50%);}
+  .hub-line.left .hub-dot{right:-3px;}
+  .hub-line.right .hub-dot{left:-3px;}
+  .core-ring{ width:150px; height:150px; border-radius:50%; border:2px dashed #B7C9DA; display:flex; align-items:center; justify-content:center; flex:0 0 auto;}
+  .core-logo{ width:120px; height:120px; border-radius:50%; background:radial-gradient(circle at 32% 28%, #204d82, var(--navy) 72%); color:#fff; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:.35rem; text-align:center; font-family:'Space Grotesk'; font-weight:800; font-size:.92rem; line-height:1.22; letter-spacing:.02em; box-shadow:0 16px 34px -12px rgba(11,37,69,.75);}
+  .core-logo svg{width:22px;height:22px; opacity:.85;}
+  .core-logo span{padding:0 .5rem;}
+  .cic{width:26px;height:26px;border-radius:50%; background:var(--bg-light-2); color:var(--navy); display:flex; align-items:center; justify-content:center;}
+  .cic svg{width:13px;height:13px;}
+
+  .foundation-wrap{ border-radius:12px; overflow:hidden; box-shadow:0 8px 22px -16px rgba(11,37,69,.25); margin-bottom:.45rem; flex-shrink:0;}
+  .foundation-head{background:var(--navy); color:#fff; font-family:'Space Grotesk'; font-weight:700; font-size:.72rem; padding:.4rem .7rem;}
+  .foundation-grid{display:grid; grid-template-columns:repeat(4,1fr); gap:.5rem .9rem; background:#fff; padding:.55rem .9rem;}
+  @media(max-width:900px){.foundation-grid{grid-template-columns:repeat(2,1fr);}}
+  .found-item{display:flex; gap:.5rem; align-items:center;}
+  .found-item .dot{width:26px;height:26px;border-radius:50%;background:var(--indigo-bg); color:var(--navy); flex:0 0 auto; display:flex; align-items:center; justify-content:center;}
+  .found-item .dot svg{width:15px;height:15px;}
+  .found-item b{display:block; font-size:.74rem; color:var(--navy); font-weight:700;}
+
+  .keyvalue-wrap{ border-radius:12px; overflow:hidden; box-shadow:0 8px 22px -16px rgba(11,37,69,.25); margin-bottom:.45rem; flex-shrink:0;}
+  .keyvalue-head{background:#2F7D4F; color:#fff; font-family:'Space Grotesk'; font-weight:700; font-size:.72rem; padding:.4rem .7rem;}
+  .keyvalue-grid{display:grid; grid-template-columns:repeat(5,1fr); gap:.5rem; background:#fff; padding:.45rem .6rem;}
+  @media(max-width:900px){.keyvalue-grid{grid-template-columns:repeat(2,1fr);}}
+  .kv-item{display:flex; gap:.3rem; align-items:flex-start;}
+  .kv-item .dot{width:16px;height:16px;border-radius:50%;background:#E7F3EC; color:#2F7D4F; flex:0 0 auto; display:flex; align-items:center; justify-content:center;}
+  .kv-item .dot svg{width:10px;height:10px;}
+  .kv-item .dot.co2{font-size:.36rem; font-weight:800;}
+  .kv-item b{display:block; font-size:.56rem; color:var(--navy);}
+  .kv-item span{display:block; font-size:.5rem; color:var(--slate); line-height:1.3;}
+
+  .tagline-bar{ background:var(--bg-light-2); border-radius:10px; padding:.5rem .8rem; font-size:.62rem; color:var(--navy-2); text-align:center; font-weight:600;}
+
+  /* ================= VALUE CARDS ================= */
+  .value-grid{display:grid; grid-template-columns:repeat(3,1fr); gap:.9rem; flex:1; align-items:start; align-content:center; min-height:0;}
+  @media(max-width:980px){.value-grid{grid-template-columns:repeat(2,1fr);}}
+  @media(max-width:640px){.value-grid{grid-template-columns:1fr;}}
+  .value-card{ background:#fff; border-radius:14px; padding:1.1rem; box-shadow:0 8px 22px -16px rgba(11,37,69,.25); transition:transform .3s ease;}
+  .value-card:hover{transform:translateY(-5px);}
+  .value-icon{width:46px; height:46px; border-radius:13px; display:flex; align-items:center; justify-content:center; margin-bottom:.8rem; color:#fff; box-shadow:0 8px 18px -10px rgba(11,37,69,.45);}
+  .value-card{ border-top:3px solid transparent; }
+  #s-customer .value-card:nth-child(1) .value-icon{background:#1C7293;} #s-customer .value-card:nth-child(1){border-top-color:#1C7293;}
+  #s-customer .value-card:nth-child(2) .value-icon{background:#F2A541; color:var(--navy);} #s-customer .value-card:nth-child(2){border-top-color:#F2A541;}
+  #s-customer .value-card:nth-child(3) .value-icon{background:#1B2A63;} #s-customer .value-card:nth-child(3){border-top-color:#1B2A63;}
+  #s-customer .value-card:nth-child(4) .value-icon{background:#C0392B;} #s-customer .value-card:nth-child(4){border-top-color:#C0392B;}
+  #s-customer .value-card:nth-child(5) .value-icon{background:#2F7D4F;} #s-customer .value-card:nth-child(5){border-top-color:#2F7D4F;}
+  #s-customer .value-card:nth-child(6) .value-icon{background:#4B2E83;} #s-customer .value-card:nth-child(6){border-top-color:#4B2E83;}
+  #s-business .value-card:nth-child(1) .value-icon{background:#4B2E83;} #s-business .value-card:nth-child(1){border-top-color:#4B2E83;}
+  #s-business .value-card:nth-child(2) .value-icon{background:#C98A3D;} #s-business .value-card:nth-child(2){border-top-color:#C98A3D;}
+  #s-business .value-card:nth-child(3) .value-icon{background:#1C7293;} #s-business .value-card:nth-child(3){border-top-color:#1C7293;}
+  #s-business .value-card:nth-child(4) .value-icon{background:#C23B5A;} #s-business .value-card:nth-child(4){border-top-color:#C23B5A;}
+  #s-business .value-card:nth-child(5) .value-icon{background:#13315C;} #s-business .value-card:nth-child(5){border-top-color:#13315C;}
+  #s-business .value-card:nth-child(6) .value-icon{background:#2F7D4F;} #s-business .value-card:nth-child(6){border-top-color:#2F7D4F;}
+  .value-card h4{font-size:.88rem; margin-bottom:.35rem; font-weight:700;}
+  .value-card p{font-size:.76rem; color:var(--slate); line-height:1.55;}
+  #s-customer .value-card, #s-business .value-card{}
+
+  /* ================= CLOSING ================= */
+  #s-closing{ align-items:center; justify-content:center; text-align:center; gap:1.6rem; }
+  .closing-tag{display:flex; gap:1.8rem; flex-wrap:wrap; justify-content:center; margin-top:1rem;}
+  .closing-item{ border:1px solid rgba(255,255,255,.18); border-radius:14px; padding:1.6rem 2.2rem; min-width:200px; transition:border-color .3s ease, transform .3s ease;}
+  .closing-item:hover{border-color:var(--amber); transform:translateY(-4px);}
+  .closing-item .disp{font-size:1.2rem; font-weight:700; color:var(--amber); letter-spacing:.06em;}
+  .closing-foot{font-size:.76rem; color:#8CA3BE; margin-top:1.6rem;}
+</style>
+</head>
+<body>
+
+<div id="progress-track"><div id="progress-fill"></div></div>
+<div id="dot-nav"></div>
+
+<div id="deck">
+
+  <!-- 1: HERO -->
+  <section class="slide dark" id="s-hero" data-title="Cover">
+    <div class="hero-grid">
+      <div>
+        <div class="eyebrow anim">PRECISE&nbsp;&nbsp;•&nbsp;&nbsp;TCS PLATFORM STRATEGY</div>
+        <h1 class="hero-title anim">จาก <b>Industrial Capitalism</b><br><span class="to">สู่ Platform Capitalism</span></h1>
+        <p class="hero-desc anim">แผนกลยุทธ์เปลี่ยนผ่านของ TCS — จากการขายสินค้าเพียงครั้งเดียว สู่การสร้างรายได้ต่อเนื่อง
+ตลอดวงจรชีวิตของลูกค้า ด้วยสถาปัตยกรรม 2 แพลตฟอร์มหลัก</p>
+        <div class="hero-hint anim">
+          <span>เลื่อนดูด้วยปุ่มลูกศร หรือคลิกลูกศรด้านล่าง</span>
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+        </div>
+      </div>
+      <div class="berg-wrap anim">
+        <svg viewBox="0 0 320 340">
+          <polygon class="berg-tip" points="160,20 235,150 85,150" fill="#CFE8F3"/>
+          <text x="160" y="105" text-anchor="middle" class="berg-label top" font-size="16">มองเห็น</text>
+          <line class="waterline" x1="40" y1="150" x2="280" y2="150" stroke="#F2A541" stroke-width="3"/>
+          <polygon class="berg-base" points="60,150 260,150 160,320" fill="#0B2545"/>
+          <text x="160" y="220" text-anchor="middle" class="berg-label bottom" font-size="15">มองไม่เห็น</text>
+          <text x="160" y="242" text-anchor="middle" class="berg-label bottom" font-size="12" opacity=".8">(โอกาสที่เสียไป)</text>
+        </svg>
+      </div>
+    </div>
+  </section>
+
+  <!-- 2: WHY PLATFORM CAPITALISM -->
+  <section class="slide light" id="s-why" data-title="Why Platform">
+    <div class="why-h1 anim">WHY PLATFORM CAPITALISM</div>
+    <div class="why-subheads">
+      <h3 class="anim">ขายแล้วจบ</h3><div></div><h3 class="anim">ขายแล้วเริ่มต้น</h3>
+    </div>
+
+    <div class="why-columns">
+      <!-- THEN -->
+      <div class="outer-card anim">
+        <div class="outer-head then">AS-IS : Industrial Capitalism</div>
+        <div class="outer-body">
+          <div class="flow-mini">
+            <div class="flow-step"><b>ออกแบบ &amp; ผลิต</b>Design &amp; Manufacture</div>
+            <div class="flow-arrow">↓</div>
+            <div class="flow-step"><b>ขายสินค้า</b>One-time Sale</div>
+            <div class="flow-arrow">↓</div>
+            <div class="flow-step"><b>ส่งมอบ &amp; ติดตั้ง</b>Delivery &amp; Handover</div>
+            <div class="flow-arrow">↓</div>
+            <div class="flow-step end"><b>จบความสัมพันธ์</b>Relationship Ends</div>
+          </div>
+          <div class="plain-rows">
+            <div class="plain-row"><div class="txt"><b>เก็บรายได้ครั้งเดียว</b><span>One-time CAPEX</span></div><div class="status-dot yes">✓</div></div>
+            <div class="plain-row"><div class="txt"><b>ไม่ถูกเก็บเกี่ยว</b><span>ต้นทุนดำเนินงาน</span></div><div class="status-dot no">✕</div></div>
+            <div class="plain-row"><div class="txt"><b>ไม่ถูกเก็บเกี่ยว</b><span>ซ่อมบำรุง / อะไหล่</span></div><div class="status-dot no">✕</div></div>
+            <div class="plain-row"><div class="txt"><b>ไม่ถูกเก็บเกี่ยว</b><span>ผลกระทบสิ่งแวดล้อม</span></div><div class="status-dot no">✕</div></div>
+            <div class="plain-row"><div class="txt"><b>ไม่ถูกเก็บเกี่ยว</b><span>การปลดระวางระบบ</span></div><div class="status-dot no">✕</div></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ICEBERG -->
+      <div class="mid-col anim">
+        <div class="vs-text">VS</div>
+        <div class="iceberg-row">
+          <div class="iceberg-icons">
+            <div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="9" cy="20" r="1.4"/><circle cx="17" cy="20" r="1.4"/><path d="M3 4h2l2.2 11.4a2 2 0 002 1.6h7.6a2 2 0 002-1.6L21 8H6"/></svg></div>
+            <div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19 12a7 7 0 00-.1-1.1l2-1.6-2-3.4-2.4 1a7 7 0 00-1.9-1.1L14 3h-4l-.6 2.8a7 7 0 00-1.9 1.1l-2.4-1-2 3.4 2 1.6A7 7 0 005 12"/></svg></div>
+            <div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14.7 6.3a4 4 0 10-5.4 5.4L3 18l3 3 6.3-6.3a4 4 0 005.4-5.4l-2.1 2.1-2-2z"/></svg></div>
+            <div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3a5 5 0 00-5 5c0 4 5 10 5 10s5-6 5-10a5 5 0 00-5-5z"/></svg></div>
+            <div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 7h13l-3-3M20 17H7l3 3M4 12h16"/></svg></div>
+          </div>
+          <div class="iceberg-frame">
+            <img src="iceberg_web.jpg" alt="LCC Iceberg: Purchase, Operation, Service & maintenance, Environmental impact, Decommissioning">
+          </div>
+        </div>
+      </div>
+
+      <!-- NEXT -->
+      <div class="outer-card anim">
+        <div class="outer-head next">TO-BE: Platform Capitalism</div>
+        <div class="outer-body">
+          <div class="revenue-rows">
+            <div class="rev-row base"><span class="pulse-dot"></span><b>Base Revenue</b>One-time Equipment Sale</div>
+            <div class="rev-row rec"><span class="pulse-dot"></span><b>Recurring</b>EMS / AI Subscription</div>
+            <div class="rev-row rec"><span class="pulse-dot"></span><b>Recurring</b>Predictive Maintenance</div>
+            <div class="rev-row carbon"><span class="pulse-dot"></span><b>Recurring</b>Carbon Management Fee</div>
+            <div class="rev-row long"><span class="pulse-dot"></span><b>Long-term Contract</b>Asset Lifecycle Management</div>
+          </div>
+          <div class="cycle-radial">
+            <svg viewBox="0 0 100 100" preserveAspectRatio="none">
+              <defs>
+                <marker id="loopArrowHead" markerWidth="8" markerHeight="8" refX="4" refY="4" orient="auto">
+                  <path d="M0,0 L8,4 L0,8 Z" fill="#1C7293"/>
+                </marker>
+              </defs>
+              <path class="cycle-arrow" d="M50,14 A34,34 0 1 1 49.2,14.02" fill="none" stroke="#1C7293" stroke-width="2.4" stroke-dasharray="7 5" marker-end="url(#loopArrowHead)"/>
+            </svg>
+            <div class="cnode n1"><b>ออกแบบ &amp; ขาย</b>Design &amp; Sell</div>
+            <div class="cnode n2"><b>เริ่มใช้งาน EMS</b>Onboard &amp; Operate</div>
+            <div class="cnode n3"><b>บริการต่อเนื่อง</b>Service &amp; Optimize</div>
+            <div class="cnode n4"><b>ต่ออายุสัญญา</b>Renew &amp; Expand</div>
+            <div class="cnode n5"><b>วัดผล ESG</b>Carbon Tracking</div>
+            <div class="crecycle"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M14.7 6.3a4 4 0 10-5.4 5.4L3 18l3 3 6.3-6.3a4 4 0 005.4-5.4l-2.1 2.1-2-2z"/></svg></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 3: REVENUE CHARTS (dedicated page, matches reference bar-chart layout) -->
+  <section class="slide white" id="s-charts" data-title="Revenue Impact">
+    <div class="why-h1 anim" style="margin-bottom:1rem;">WHY PLATFORM CAPITALISM</div>
+    <div class="big-charts-wrap">
+      <div class="big-chart-col anim">
+        <div class="big-chart-head then">AS-IS : Industrial Capitalism</div>
+        <div class="big-chart-body">
+          <div class="axis-label">ล้านบาท (GM สะสม)</div>
+          <div id="chartThen" class="big-chart-canvas"></div>
+        </div>
+      </div>
+      <div class="big-chart-col anim">
+        <div class="big-chart-head next">TO-BE: Platform Capitalism</div>
+        <div class="big-chart-body">
+          <div class="callout-badge" id="badgeNext">เพิ่มขึ้น +122 MB (+6.2%)</div>
+          <div class="axis-label">ล้านบาท (สะสม)</div>
+          <div id="chartNextTotal" class="big-chart-canvas"></div>
+        </div>
+        <div class="chart-legend big">
+          <span><i style="background:#5B6B7C"></i> Industrial GM (สะสม)</span>
+          <span><i style="background:var(--amber)"></i> Subscription (สะสม)</span>
+        </div>
+      </div>
+    </div>
+    <p class="footnote anim">* ฐานคำนวณ = GM (Target PO x 25%GP, Update 17/06/2569) ปี 2573–2576 ใช้ Target เท่าปี 2572 (คงที่) Subscription เริ่มปี 2573
+คิดจาก GM สะสมทั้งหมดของฐานลูกค้าเดิม (ไม่ใช่แค่ปีนั้นปีเดียว) ที่ 50,000 บาท ต่อทุก 2.5 ล้านบาทของ GM สะสม (เทียบเท่า 2%/ปี)
+และรับต่อเนื่องแบบสะสมทุกปีถัดไป — เป็นประมาณการเบื้องต้น รอยืนยันจากสัญญาจริงหรือ Pilot Pricing กับลูกค้า</p>
+  </section>
+
+  <!-- 4: END-WAY-MEAN -->
+  <section class="slide white" id="s-ewm" data-title="End Way Mean">
+    <div class="eyebrow anim">กรอบคิดกลยุทธ์</div>
+    <h2 class="sec-title anim">End – Way – Mean: นิยามการเปลี่ยนผ่านของ TCS</h2>
+    <div class="ewm-grid stagger">
+      <div class="ewm-card anim">
+        <div class="ewm-head">
+          <svg class="ewm-icon" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.8"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 3"/></svg>
+          <h3>END</h3><span>เป้าหมายปลายทาง</span>
+        </div>
+        <div class="ewm-body">เพิ่มประสิทธิภาพการใช้ทรัพยากรให้สูงสุด เพื่อสร้างรายได้ต่อเนื่องทุกวัน ไม่ใช่รายได้ที่เกิดขึ้นเพียงครั้งเดียวตอนปิดการขาย</div>
+      </div>
+      <div class="ewm-card anim">
+        <div class="ewm-head">
+          <svg class="ewm-icon" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.8"><path d="M4 7h13l-3-3M20 17H7l3 3"/></svg>
+          <h3>WAY</h3><span>แนวทางเปลี่ยนผ่าน</span>
+        </div>
+        <div class="ewm-body">Transform จาก Industrial Capitalism (ขายสินค้า) ไปสู่ Platform Capitalism (ขายคุณค่าต่อเนื่อง) ตลอดวงจรชีวิตของสินทรัพย์ลูกค้า</div>
+      </div>
+      <div class="ewm-card anim">
+        <div class="ewm-head">
+          <svg class="ewm-icon" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.8"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 11-2.83 2.83l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 11-4 0v-.09a1.65 1.65 0 00-1-1.51 1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 11-2.83-2.83l.06-.06a1.65 1.65 0 00.33-1.82 1.65 1.65 0 00-1.51-1H3a2 2 0 110-4h.09a1.65 1.65 0 001.51-1 1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 112.83-2.83l.06.06a1.65 1.65 0 001.82.33H9a1.65 1.65 0 001-1.51V3a2 2 0 114 0v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 112.83 2.83l-.06.06a1.65 1.65 0 00-.33 1.82V9a1.65 1.65 0 001.51 1H21a2 2 0 110 4h-.09a1.65 1.65 0 00-1.51 1z"/></svg>
+          <h3>MEAN</h3><span>เครื่องมือขับเคลื่อน</span>
+        </div>
+        <div class="ewm-body">Technology Platform + Commercial &amp; Management Technology Platform ใช้สินค้าเดิม ผูกกับชั้น Digital / AI / EMS และ Revenue Model แบบ Recurring</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 4: PLATFORM CORE (native, staged pop-in) -->
+  <section class="slide alt" id="s-core" data-title="Platform Core">
+    <div class="eyebrow anim">BUSINESS PILLARS × TECHNOLOGY ARCHITECTURE</div>
+    <h2 class="sec-title anim" style="margin-bottom:.5rem;">TCS Platform Core</h2>
+
+    <div class="core-rail anim pop" style="transition-delay:0s">
+      <div class="lbl">Business Pillars</div>
+      <div class="pillars">
+        <div class="pillar p1"><span class="num">01</span><b>Power Distribution &amp; Transmission</b></div>
+        <div class="pillar p2"><span class="num">02</span><b>High-Quality Power System</b></div>
+        <div class="pillar p3"><span class="num">03</span><b>Power Quality</b></div>
+        <div class="pillar p4"><span class="num">04</span><b>Energy Conservation</b></div>
+        <div class="pillar p5"><span class="num">05</span><b>Renewable Energy</b></div>
+      </div>
+    </div>
+
+    <div class="platforms-row">
+      <div class="plat-box anim pop" style="transition-delay:.15s">
+        <div class="plat-head tech"><b>1) TECHNOLOGY PLATFORM</b><span class="kv">Key Value: Energy Saving · Power Guarantee · Zero Downtime · Long Assurance · Carbon Reduction</span></div>
+        <div class="plat-body">
+          <div class="subplat value-focus">
+            <div class="subplat-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/></svg></div>
+            <h5>1.1 DIGITAL ENGINEERING PLATFORM</h5>
+            <span>ออกแบบ · จำลอง · ตรวจสอบ</span>
+          </div>
+          <div class="subplat value-focus">
+            <div class="subplat-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 00.33 1.82 2 2 0 11-2.83 2.83 1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51 2 2 0 11-4 0 1.65 1.65 0 00-1-1.51 1.65 1.65 0 00-1.82.33 2 2 0 11-2.83-2.83A1.65 1.65 0 005.6 15a1.65 1.65 0 00-1.51-1 2 2 0 110-4 1.65 1.65 0 001.51-1 1.65 1.65 0 00-.33-1.82 2 2 0 112.83-2.83A1.65 1.65 0 009 5.6a1.65 1.65 0 001-1.51 2 2 0 114 0 1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33 2 2 0 112.83 2.83A1.65 1.65 0 0018.4 9a1.65 1.65 0 001.51 1 2 2 0 110 4 1.65 1.65 0 00-1.51 1z"/></svg></div>
+            <h5>1.2 ENERGY INTELLIGENCE PLATFORM (EMS)</h5>
+            <span>ควบคุม · วิเคราะห์ · พยากรณ์ · ลดต้นทุน</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="connector-col anim pop" style="transition-delay:.3s">
+        <div class="connector-title">CORE CONNECTOR</div>
+        <div class="connector-sub">เชื่อมข้อมูล · เชื่อมบริการ · สร้างคุณค่า</div>
+        <div class="connector-icons">
+          <div class="cic" title="Data Integration"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><ellipse cx="12" cy="5" rx="8" ry="3"/><path d="M4 5v6c0 1.7 3.6 3 8 3s8-1.3 8-3V5M4 11v6c0 1.7 3.6 3 8 3s8-1.3 8-3v-6"/></svg></div>
+          <div class="cic" title="API Gateway"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="4" y="4" width="16" height="16" rx="3"/><path d="M8 12h8M8 8h5M8 16h5"/></svg></div>
+          <div class="cic" title="Event Bus"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 12h4l3-7 4 14 3-7h2"/></svg></div>
+          <div class="cic" title="Identity & Access"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="8" r="3.2"/><path d="M5 20c0-3.3 3.1-6 7-6s7 2.7 7 6"/></svg></div>
+          <div class="cic" title="Governance & Security"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3l7 3v5c0 5-3 8.5-7 10-4-1.5-7-5-7-10V6l7-3z"/></svg></div>
+        </div>
+        <div class="core-hub">
+          <span class="hub-line left"><span class="hub-dot"></span></span>
+          <div class="core-ring">
+            <div class="core-logo">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M7 18a4 4 0 01-1-7.9A5 5 0 0115.9 8H17a4 4 0 010 8H7z"/><rect x="9" y="19.5" width="6" height="2.5" rx=".5" fill="currentColor" stroke="none" opacity=".85"/></svg>
+              <span>TCS<br>PLATFORM<br>CORE</span>
+            </div>
+          </div>
+          <span class="hub-line right"><span class="hub-dot"></span></span>
+        </div>
+      </div>
+
+      <div class="plat-box anim pop" style="transition-delay:.45s">
+        <div class="plat-head comm"><b>2) COMMERCIAL &amp; MANAGEMENT TECHNOLOGY PLATFORM</b><span class="kv">Key Value: Customer Engagement · Recurring Revenue · Ecosystem Collaboration · Business Value Creation</span></div>
+        <div class="comm-body">
+          <div class="comm-grid g3">
+            <div class="comm-chip">Partner / 3rd-Party App Ecosystem</div>
+            <div class="comm-chip">Ecosystem &amp; Services</div>
+            <div class="comm-chip">Project Management Business Platform</div>
+          </div>
+          <div class="comm-grid" style="grid-template-columns:1fr;">
+            <div class="comm-chip">Customer Engagement Platform (CRM, Customer Loyalty)</div>
+          </div>
+          <div class="comm-grid g6">
+            <div class="comm-chip">Stakeholder Map</div>
+            <div class="comm-chip">Commercial Platform (Quotation / PO)</div>
+            <div class="comm-chip">Sale &amp; Operation Planning</div>
+            <div class="comm-chip">Pricing Strategy</div>
+            <div class="comm-chip">Financing Platform</div>
+            <div class="comm-chip">Digital Commerce Platform</div>
+          </div>
+          <div class="comm-grid g3">
+            <div class="comm-chip">Asset Lifecycle Management Platform</div>
+            <div class="comm-chip">ESG &amp; Carbon Commercial Platform</div>
+            <div class="comm-chip">AI Intelligence</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="foundation-wrap anim pop" style="transition-delay:.6s">
+      <div class="foundation-head">FOUNDATION (ครอบคลุมทั้ง 2 PLATFORM)</div>
+      <div class="foundation-grid">
+        <div class="found-item"><div class="dot"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M7 18a4 4 0 01-1-7.9A5 5 0 0115.9 8H17a4 4 0 010 8H7z"/></svg></div><div><b>Hybrid Cloud &amp; SaaS Infrastructure</b></div></div>
+        <div class="found-item"><div class="dot"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3l7 3v5c0 5-3 8.5-7 10-4-1.5-7-5-7-10V6l7-3z"/></svg></div><div><b>OT/IT Cyber Security (End-to-End)</b></div></div>
+        <div class="found-item"><div class="dot"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><ellipse cx="12" cy="5" rx="8" ry="3"/><path d="M4 5v6c0 1.7 3.6 3 8 3s8-1.3 8-3V5M4 11v6c0 1.7 3.6 3 8 3s8-1.3 8-3v-6"/></svg></div><div><b>Data Platform &amp; Governance</b></div></div>
+        <div class="found-item"><div class="dot"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="4" y="4" width="16" height="16" rx="3"/><path d="M8 12h8M8 8h5M8 16h5"/></svg></div><div><b>Integration &amp; API Management</b></div></div>
+        <div class="found-item"><div class="dot"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M12 3v2M12 19v2M4.2 4.2l1.4 1.4M18.4 18.4l1.4 1.4M3 12h2M19 12h2M4.2 19.8l1.4-1.4M18.4 5.6l1.4-1.4"/></svg></div><div><b>AI &amp; Analytics Platform</b></div></div>
+        <div class="found-item"><div class="dot"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="12" rx="2"/><path d="M8 20h8M12 16v4"/></svg></div><div><b>Monitoring &amp; Observability</b></div></div>
+        <div class="found-item"><div class="dot"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14.7 6.3a4 4 0 10-5.4 5.4L3 18l3 3 6.3-6.3a4 4 0 005.4-5.4l-2.1 2.1-2-2z"/></svg></div><div><b>DevOps &amp; Platform Operations</b></div></div>
+        <div class="found-item"><div class="dot"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6L9 17l-5-5"/></svg></div><div><b>Compliance &amp; Standards</b></div></div>
+      </div>
+    </div>
+
+    <div class="keyvalue-wrap anim pop" style="transition-delay:.75s">
+      <div class="keyvalue-head">KEY VALUE รวมทั้งระบบ</div>
+      <div class="keyvalue-grid">
+        <div class="kv-item"><div class="dot"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3a5 5 0 00-5 5c0 4 5 10 5 10s5-6 5-10a5 5 0 00-5-5z"/></svg></div><div><b>Energy Saving</b><span>ลดการใช้พลังงาน</span></div></div>
+        <div class="kv-item"><div class="dot"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M13 2L4 14h6l-1 8 9-12h-6l1-8z"/></svg></div><div><b>Power Guarantee</b><span>ระบบไฟฟ้าเสถียร เชื่อถือได้ 24/7</span></div></div>
+        <div class="kv-item"><div class="dot"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 3"/></svg></div><div><b>Zero Downtime</b><span>ลดหยุดชะงัก ตอบไวต่อธุรกิจ</span></div></div>
+        <div class="kv-item"><div class="dot"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3l7 3v5c0 5-3 8.5-7 10-4-1.5-7-5-7-10V6l7-3z"/></svg></div><div><b>Long Assurance</b><span>ยืดอายุสินทรัพย์ ลดต้นทุนระยะยาว</span></div></div>
+        <div class="kv-item"><div class="dot co2">CO₂</div><div><b>Carbon Reduction</b><span>ลดการปล่อยคาร์บอน ตอบโจทย์ ESG</span></div></div>
+      </div>
+    </div>
+
+    <div class="tagline-bar anim pop" style="transition-delay:.9s">TCS PLATFORM CORE : ผสานพลังเทคโนโลยี (Technology) และการบริหารเชิงพาณิชย์ (Commercial &amp; Management) เพื่อสร้างคุณค่าและรายได้ต่อเนื่องตลอดอายุการใช้งานของสินทรัพย์</div>
+  </section>
+
+  <!-- 5: CUSTOMER PERSPECTIVE -->
+  <section class="slide light" id="s-customer" data-title="Customer Value">
+    <div class="eyebrow anim">CUSTOMER PERSPECTIVE</div>
+    <h2 class="sec-title anim">Customer Value — คุณค่าที่ลูกค้าได้รับหลัง Transform</h2>
+    <p class="sec-sub anim">จาก "ซื้อของแล้วดูแลเอง" สู่ "มีพาร์ทเนอร์ดูแลตลอดอายุสินทรัพย์"</p>
+    <div class="value-grid stagger">
+      <div class="value-card anim">
+        <div class="value-icon"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 2l8 3v6c0 5-3.5 8.5-8 11-4.5-2.5-8-6-8-11V5l8-3z"/></svg></div>
+        <h4>Power Guarantee &amp; Zero Downtime</h4>
+        <p>มีระบบเฝ้าระวังและ Predictive Maintenance ที่แก้ปัญหาก่อนเกิดความเสียหายลุกลาม</p>
+      </div>
+      <div class="value-card anim">
+        <div class="value-icon"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M13 2L4 14h6l-1 8 9-12h-6l1-8z"/></svg></div>
+        <h4>Energy Saving ที่จับต้องได้</h4>
+        <p>เห็นต้นทุนพลังงานเรียลไทม์ผ่าน IoT/EMS พร้อมคำแนะนำลดใช้พลังงานตามพฤติกรรมจริง</p>
+      </div>
+      <div class="value-card anim">
+        <div class="value-icon"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M21 12a9 9 0 11-3-6.7M21 3v6h-6"/></svg></div>
+        <h4>Long Assurance ตลอดวงจรชีวิต</h4>
+        <p>Asset Lifecycle Management ช่วยยืดอายุสินทรัพย์ วางแผนงบซ่อมบำรุงล่วงหน้าได้แม่นยำ</p>
+      </div>
+      <div class="value-card anim">
+        <div class="value-icon"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="5" y="11" width="14" height="9" rx="2"/><path d="M8 11V7a4 4 0 018 0v4"/></svg></div>
+        <h4>ความมั่นใจด้าน Cyber Security</h4>
+        <p>ระบบ SCADA/EMS ที่ควบคุมโครงข่ายไฟฟ้าได้รับการป้องกันภัยไซเบอร์ทั้ง IT และ OT</p>
+      </div>
+      <div class="value-card anim">
+        <div class="value-icon"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="6" cy="6" r="2.4"/><circle cx="18" cy="6" r="2.4"/><circle cx="12" cy="18" r="2.4"/><path d="M8 7l6 9M16 7l-6 9"/></svg></div>
+        <h4>One-Stop Ecosystem</h4>
+        <p>เข้าถึง Financing, Insurance และ Digital Commerce ผ่านช่องทางเดียว ไม่ต้องรอ Sales ติดต่อกลับ</p>
+      </div>
+      <div class="value-card anim">
+        <div class="value-icon"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 3a5 5 0 00-5 5c0 4 5 10 5 10s5-6 5-10a5 5 0 00-5-5z"/><circle cx="12" cy="8" r="1.6"/></svg></div>
+        <h4>ESG &amp; Carbon Reporting พร้อมใช้</h4>
+        <p>ได้หลักฐาน Carbon Footprint จาก EMS โดยตรง ใช้ยื่น Green Financing หรือรายงานผู้ถือหุ้นได้ทันที</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- 6: BUSINESS PERSPECTIVE -->
+  <section class="slide white" id="s-business" data-title="Business Value">
+    <div class="eyebrow anim">BUSINESS PERSPECTIVE</div>
+    <h2 class="sec-title anim">Business Value — คุณค่าทางธุรกิจของ PRECISE/TCS หลัง Transform</h2>
+    <p class="sec-sub anim">จาก One-time Sale สู่ Recurring Revenue Platform ที่มี Revenue Visibility สูงขึ้น</p>
+    <div class="value-grid stagger">
+      <div class="value-card anim">
+        <div class="value-icon"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><ellipse cx="12" cy="5" rx="8" ry="3"/><path d="M4 5v6c0 1.7 3.6 3 8 3s8-1.3 8-3V5M4 11v6c0 1.7 3.6 3 8 3s8-1.3 8-3v-6"/></svg></div>
+        <h4>5 Recurring Revenue Streams</h4>
+        <p>Subscription, Shared Savings, Service Retainer, Marketplace Commission, Transaction Fee</p>
+      </div>
+      <div class="value-card anim">
+        <div class="value-icon"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M3 17l6-6 4 4 8-8M21 7v6h-6"/></svg></div>
+        <h4>Revenue Visibility สูงขึ้น</h4>
+        <p>สัญญาระยะยาว (Long-term Service Agreement) ลดความผันผวนของรายได้รายไตรมาส</p>
+      </div>
+      <div class="value-card anim">
+        <div class="value-icon"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><ellipse cx="12" cy="5" rx="8" ry="3"/><path d="M4 5v6c0 1.7 3.6 3 8 3s8-1.3 8-3V5M4 11v6c0 1.7 3.6 3 8 3s8-1.3 8-3v-6"/><path d="M12 14v4"/></svg></div>
+        <h4>Data เป็น Asset ต่อยอดได้</h4>
+        <p>ข้อมูลจาก IoT/Digital Twin ต่อยอดเป็น AI Subscription และ Predictive Maintenance Fee โดยไม่เพิ่ม Hardware</p>
+      </div>
+      <div class="value-card anim">
+        <div class="value-icon"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M17 8a5 5 0 00-10 0M7 8v3a5 5 0 0010 0V8M12 16v4M9 20h6"/></svg></div>
+        <h4>Enterprise Trust เปิดดีลใหญ่</h4>
+        <p>Cyber Security Framework สร้างความน่าเชื่อถือ เปิดดีล OT-to-Cloud ระดับ Enterprise</p>
+      </div>
+      <div class="value-card anim">
+        <div class="value-icon"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="6" cy="12" r="2.4"/><circle cx="18" cy="6" r="2.4"/><circle cx="18" cy="18" r="2.4"/><path d="M8.2 11l7.6-4M8.2 13l7.6 4"/></svg></div>
+        <h4>รายได้จาก Ecosystem โดยไม่ต้องลงทุนเอง</h4>
+        <p>Partner/3rd-Party App Ecosystem เปิด Marketplace &amp; Financial Commission โดยไม่ต้องพัฒนาเอง 100%</p>
+      </div>
+      <div class="value-card anim">
+        <div class="value-icon"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="9" cy="8" r="3"/><path d="M2 20c0-3.3 3-6 7-6s7 2.7 7 6"/><circle cx="18" cy="9" r="2.2"/><path d="M16 20c.2-2 1.6-3.6 3.6-4"/></svg></div>
+        <h4>Cross-sell &amp; Share of Wallet</h4>
+        <p>Customer Engagement Platform ใช้ข้อมูล Loyalty วางแผน Cross-sell ข้าม 5 Business Pillar</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- 7: CLOSING -->
+  <section class="slide dark" id="s-closing" data-title="Roadmap">
+    <div class="eyebrow anim">ROAD MAP &amp; PROJECT BUDGETING</div>
+    <div class="closing-tag">
+      <div class="closing-item anim"><div class="disp">ROAD MAP</div></div>
+      <div class="closing-item anim"><div class="disp">PROJECT BUDGETING</div></div>
+    </div>
+    <div class="closing-foot anim">PRECISE — TCS Platform Strategy</div>
+  </section>
+
+</div>
+
+<div id="bottom-nav">
+  <button class="nav-btn" id="btn-prev" aria-label="Previous slide">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M15 6l-6 6 6 6"/></svg>
+  </button>
+  <span id="slide-count">01 / 07</span>
+  <button class="nav-btn" id="btn-next" aria-label="Next slide">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M9 6l6 6-6 6"/></svg>
+  </button>
+</div>
+
+<script>
+  const slides = Array.from(document.querySelectorAll('.slide'));
+  const total = slides.length;
+  let current = 0;
+
+  const dotNav = document.getElementById('dot-nav');
+  slides.forEach((s,i)=>{
+    const d = document.createElement('div');
+    d.className = 'dot'; d.title = s.dataset.title;
+    d.addEventListener('click', ()=>goTo(i));
+    dotNav.appendChild(d);
+  });
+  const dots = Array.from(dotNav.children);
+  function pad(n){ return n<10 ? '0'+n : ''+n; }
+
+  function playAnims(slide){
+    const items = slide.querySelectorAll('.anim');
+    items.forEach(el=> el.classList.remove('in'));
+    void slide.offsetWidth;
+    requestAnimationFrame(()=>{ items.forEach(el=> el.classList.add('in')); });
+    if(slide.id === 's-charts'){ resetAndPlayCharts(); }
+  }
+
+  function render(){
+    slides.forEach((s,i)=>{
+      if(i === current){ s.style.transform='translateX(0)'; s.style.opacity='1'; s.style.zIndex=2; s.style.pointerEvents='auto'; }
+      else if(i < current){ s.style.transform='translateX(-4%)'; s.style.opacity='0'; s.style.zIndex=1; s.style.pointerEvents='none'; }
+      else { s.style.transform='translateX(4%)'; s.style.opacity='0'; s.style.zIndex=1; s.style.pointerEvents='none'; }
+    });
+    dots.forEach((d,i)=> d.classList.toggle('active', i===current));
+    dotNav.classList.toggle('on-dark', slides[current].classList.contains('dark'));
+    document.getElementById('slide-count').textContent = pad(current+1) + ' / ' + pad(total);
+    document.getElementById('progress-fill').style.width = ((current+1)/total*100) + '%';
+    document.getElementById('btn-prev').disabled = current===0;
+    document.getElementById('btn-next').disabled = current===total-1;
+    playAnims(slides[current]);
+  }
+
+  function goTo(i){ current = Math.max(0, Math.min(total-1, i)); render(); }
+  function next(){ if(current < total-1){ current++; render(); } }
+  function prev(){ if(current > 0){ current--; render(); } }
+
+  document.getElementById('btn-next').addEventListener('click', next);
+  document.getElementById('btn-prev').addEventListener('click', prev);
+  window.addEventListener('keydown', (e)=>{
+    if(['ArrowRight','ArrowDown','PageDown',' '].includes(e.key)){ e.preventDefault(); next(); }
+    else if(['ArrowLeft','ArrowUp','PageUp'].includes(e.key)){ e.preventDefault(); prev(); }
+    else if(e.key==='Home'){ goTo(0); } else if(e.key==='End'){ goTo(total-1); }
+  });
+  let touchX = null;
+  window.addEventListener('touchstart', (e)=>{ touchX = e.touches[0].clientX; }, {passive:true});
+  window.addEventListener('touchend', (e)=>{
+    if(touchX===null) return;
+    const dx = e.changedTouches[0].clientX - touchX;
+    if(Math.abs(dx) > 50){ dx < 0 ? next() : prev(); }
+    touchX = null;
+  }, {passive:true});
+  let wheelLock = false;
+  document.getElementById('deck').addEventListener('wheel', (e)=>{
+    const activeSlide = slides[current];
+    const atTop = activeSlide.scrollTop <= 0;
+    const atBottom = Math.ceil(activeSlide.scrollTop + activeSlide.clientHeight) >= activeSlide.scrollHeight;
+    if((e.deltaY > 0 && !atBottom) || (e.deltaY < 0 && !atTop)) return;
+    if(wheelLock) return;
+    if(Math.abs(e.deltaY) < 12) return;
+    wheelLock = true;
+    e.deltaY > 0 ? next() : prev();
+    setTimeout(()=> wheelLock=false, 650);
+  }, {passive:true});
+
+  // ---- monthly revenue data (extracted from source deck's native charts) ----
+  const industrialMonthly = [8.33, 16.67, 25, 33.33, 41.67, 50, 58.33, 66.67, 75, 83.33, 91.67, 100, 113.31, 126.61, 139.92, 153.22, 166.53, 179.84, 193.14, 206.45, 219.75, 233.06, 246.36, 259.67, 277.86, 296.06, 314.25, 332.45, 350.64, 368.83, 387.03, 405.22, 423.42, 441.61, 459.81, 478, 503, 528, 553, 578, 603, 628, 653, 678, 703, 728, 753, 778, 803, 828, 853, 878, 903, 928, 953, 978, 1003, 1028, 1053, 1078, 1103, 1128, 1153, 1178, 1203, 1228, 1253, 1278, 1303, 1328, 1353, 1378, 1403, 1428, 1453, 1478, 1503, 1528, 1553, 1578, 1603, 1628, 1653, 1678, 1703, 1728, 1753, 1778, 1803, 1828, 1853, 1878, 1903, 1928, 1953, 1978];
+  const subscriptionMonthly = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1.8, 3.59, 5.39, 7.19, 8.98, 10.78, 12.58, 14.37, 16.17, 17.97, 19.76, 21.56, 23.86, 26.15, 28.45, 30.75, 33.04, 35.34, 37.64, 39.93, 42.23, 44.53, 46.82, 49.12, 51.92, 54.71, 57.51, 60.31, 63.1, 65.9, 68.7, 71.49, 74.29, 77.09, 79.88, 82.68, 85.98, 89.27, 92.57, 95.87, 99.16, 102.46, 105.76, 109.05, 112.35, 115.65, 118.94, 122.24];
+  const yearLabels = ['2569','2570','2571','2572','2573','2574','2575','2576'];
+
+  function barChartSVG(seriesArr, yMax, yTicks, w, h){
+    const months = 96, left=34, right=6, top=10, bottom=16;
+    const plotW = w-left-right, plotH = h-top-bottom;
+    const slot = plotW/months;
+    const barW = Math.max(slot*0.62, 1.2);
+    const X = i => left + i*slot + (slot-barW)/2;
+    const Y = v => top + plotH - (v/yMax*plotH);
+    let s = '';
+    yTicks.forEach(t=>{
+      const yy = Y(t);
+      s += `<line x1="${left}" y1="${yy.toFixed(1)}" x2="${w-right}" y2="${yy.toFixed(1)}" stroke="#EEF2F6" stroke-width="1"/>`;
+      s += `<text x="${left-4}" y="${(yy+3).toFixed(1)}" font-size="8.5" fill="#3B4A5A" text-anchor="end" font-family="Space Grotesk" font-weight="600">${t}</text>`;
+    });
+    s += `<line x1="${left}" y1="${top}" x2="${left}" y2="${top+plotH}" stroke="#94A3B8" stroke-width="1"/>`;
+    for(let idx=0; idx<8; idx++){
+      const cx = X(idx*12 + 6);
+      s += `<text x="${cx.toFixed(1)}" y="${h-2}" font-size="7.5" fill="#5B6B7C" text-anchor="middle" font-family="Space Grotesk">${yearLabels[idx]}</text>`;
+    }
+    for(let i=0;i<months;i++){
+      let cum = 0;
+      seriesArr.forEach(ser=>{
+        const v = ser.data[i];
+        const prevCum = cum;
+        cum += v;
+        const yTop = Y(cum);
+        const yBottom = Y(prevCum);
+        const bh = yBottom - yTop;
+        if(bh > 0.1){
+          s += `<rect class="bar-rect" data-y="${yTop.toFixed(2)}" data-h="${bh.toFixed(2)}" x="${X(i).toFixed(2)}" y="${yBottom.toFixed(2)}" width="${barW.toFixed(2)}" height="0" fill="${ser.color}"/>`;
+        }
+      });
+    }
+    return `<svg viewBox="0 0 ${w} ${h}" class="line-svg" preserveAspectRatio="none">${s}</svg>`;
+  }
+
+  let chartsBuilt = false;
+  function buildCharts(){
+    document.getElementById('chartThen').innerHTML = barChartSVG(
+      [{data:industrialMonthly, color:'#8792A2'}], 2100, [0,500,1000,1500,2000], 640, 300);
+    document.getElementById('chartNextTotal').innerHTML = barChartSVG(
+      [{data:industrialMonthly, color:'#8792A2'}, {data:subscriptionMonthly.map((v,i)=>v), color:'#F2A541'}], 2100, [0,500,1000,1500,2000], 640, 300);
+    chartsBuilt = true;
+  }
+
+  function animateChart(containerId){
+    const c = document.getElementById(containerId);
+    const bars = c.querySelectorAll('.bar-rect');
+    bars.forEach(b=>{ b.setAttribute('height','0'); b.setAttribute('y', (parseFloat(b.dataset.y)+parseFloat(b.dataset.h)).toFixed(2)); });
+    bars.forEach((b,idx)=>{
+      setTimeout(()=>{
+        b.style.transition = 'y .5s ease, height .5s ease';
+        b.setAttribute('y', b.dataset.y);
+        b.setAttribute('height', b.dataset.h);
+      }, idx*6);
+    });
+  }
+
+  function resetAndPlayCharts(){
+    if(!chartsBuilt) buildCharts();
+    const badge = document.getElementById('badgeNext');
+    badge.classList.remove('in');
+    ['chartThen','chartNextTotal'].forEach(animateChart);
+    setTimeout(()=> badge.classList.add('in'), 700);
+  }
+
+  render();
+</script>
+</body>
+</html>
