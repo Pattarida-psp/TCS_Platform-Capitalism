@@ -313,7 +313,7 @@
   #s-actors{ justify-content:center; align-items:center; padding-top:3.2vh; }
   .orbit-head{ text-align:center; margin-bottom:1rem; }
   .orbit-head .orbit-sub{ font-size:.82rem; color:var(--slate); max-width:560px; margin:.3rem auto 0; }
-  .orbit-stage{ position:relative; width:min(72vh,760px); height:min(72vh,760px); margin:0 auto; flex:none; }
+  .orbit-stage{ position:relative; width:min(72vh,760px); height:min(72vh,760px); margin:0; align-self:flex-start; flex:none; }
   .orbit-ring{ position:absolute; inset:8%; border:1px dashed rgba(11,37,69,.18); border-radius:50%; }
   .orbit-center{
     position:absolute; left:50%; top:50%; transform:translate(-50%,-50%);
@@ -346,21 +346,22 @@
   .orbit-hint svg{ width:13px; height:13px; }
   @media(max-width:720px){ .orbit-stage{ width:min(88vw,520px); height:min(88vw,520px); } .orbit-node .otag{display:none;} }
 
-  /* ---- popup modal ---- */
+  /* ---- popup modal (right-side panel) ---- */
   #actor-overlay{
-    position:fixed; inset:0; background:rgba(11,37,69,.55); backdrop-filter:blur(3px);
-    display:flex; align-items:center; justify-content:center; padding:4vh 4vw;
+    position:fixed; inset:0; background:rgba(11,37,69,.35);
     z-index:900; opacity:0; visibility:hidden; transition:opacity .28s ease;
   }
   #actor-overlay.show{ opacity:1; visibility:visible; }
   .actor-card{
-    background:#fff; border-radius:18px; width:min(680px,96vw); max-height:86vh; overflow-y:auto;
-    box-shadow:0 30px 70px -20px rgba(11,37,69,.5); transform:translateY(16px) scale(.97); transition:transform .28s ease;
+    position:absolute; top:0; right:0; height:100%; width:min(460px,92vw);
+    background:#fff; border-radius:18px 0 0 18px; overflow-y:auto;
+    box-shadow:-24px 0 60px -20px rgba(11,37,69,.45);
+    transform:translateX(100%); transition:transform .32s cubic-bezier(.4,0,.2,1);
   }
-  #actor-overlay.show .actor-card{ transform:translateY(0) scale(1); }
+  #actor-overlay.show .actor-card{ transform:translateX(0); }
   .actor-card::-webkit-scrollbar{width:6px;}
   .actor-card::-webkit-scrollbar-thumb{background:rgba(11,37,69,.18); border-radius:10px;}
-  .actor-card-head{ background:var(--navy); color:#fff; padding:1.3rem 1.6rem; border-radius:18px 18px 0 0; position:relative; }
+  .actor-card-head{ background:var(--navy); color:#fff; padding:1.3rem 1.6rem; border-radius:18px 0 0 0; position:relative; }
   .actor-card-head .ac-eyebrow{ font-family:'Space Grotesk'; font-size:.68rem; letter-spacing:.14em; color:var(--amber); font-weight:700; text-transform:uppercase; }
   .actor-card-head h2{ font-size:1.25rem; margin-top:.35rem; font-weight:700; }
   .actor-card-head p{ font-size:.8rem; color:#B9C6D6; margin-top:.35rem; max-width:520px; }
@@ -434,19 +435,29 @@
   .hop-plat-2col .cell{ padding:1.4rem 1rem; text-align:center; font-size:.92rem; font-weight:700; color:var(--navy); display:flex; flex-direction:column; align-items:center; gap:.5rem; }
   .hop-plat-2col .cell:first-child{ border-right:1px solid #E1E8EF; }
 
-  .hop-plat-grid{ display:grid; grid-template-columns:repeat(5,1fr); border:1px solid #E1E8EF; border-radius:12px; overflow:hidden; background:#fff; }
+  .hop-plat-grid{ display:grid; grid-template-columns:repeat(2,1fr); border:1px solid #E1E8EF; border-radius:12px; overflow:hidden; background:#fff; }
   .hop-plat-grid .cell{
     padding:.85rem .55rem; text-align:center; font-size:.74rem; font-weight:700; color:var(--navy);
     border-right:1px solid #EEF1F5; border-bottom:1px solid #EEF1F5; display:flex; flex-direction:column; align-items:center; gap:.4rem;
   }
-  .hop-plat-grid .cell:nth-child(5n){ border-right:none; }
-  .hop-plat-grid .cell:nth-child(n+6){ border-bottom:none; }
-  @media(max-width:900px){ .hop-plat-grid{grid-template-columns:repeat(2,1fr);} .hop-plat-grid .cell:nth-child(5n){border-right:1px solid #EEF1F5;} .hop-plat-grid .cell:nth-child(even){border-right:none;} }
+  .hop-plat-grid .cell:nth-child(2n){ border-right:none; }
+  .hop-plat-grid .cell:nth-child(n+9){ border-bottom:none; }
+  @media(max-width:520px){ .hop-plat-grid{grid-template-columns:1fr;} .hop-plat-grid .cell{border-right:none;} .hop-plat-grid .cell:nth-child(n+9){border-bottom:1px solid #EEF1F5;} .hop-plat-grid .cell:last-child{border-bottom:none;} }
 
   .hop-chk{ display:inline-flex; align-items:center; justify-content:center; width:18px; height:18px; flex:none; }
   .hop-chk svg{ width:100%; height:100%; }
   .hop-chk.sq{ background:var(--navy); border-radius:4px; }
   .hop-chk.ci{ background:var(--teal); border-radius:50%; }
+
+  .hop-operational{ grid-template-columns:1fr 1fr; gap:1.3rem; }
+  .hop-op-half{ display:flex; gap:.7rem; align-items:flex-start; min-width:0; }
+  .hop-op-half .hop-cards-flank{ flex:0 0 148px; }
+  .hop-op-half .hop-plat-2col{ flex:1; min-width:0; }
+  .hop-op-half .hop-plat-grid{ flex:1; min-width:0; }
+  @media(max-width:1180px){ .hop-op-half{ flex-direction:column; } .hop-op-half .hop-cards-flank{ flex:none; width:100%; flex-direction:row; flex-wrap:wrap; } }
+  @media(max-width:900px){ .hop-operational{ grid-template-columns:1fr; } }
+  .hop-cards-flank{ display:flex; flex-direction:column; gap:.5rem; }
+  .hop-cards-flank .hop-card{ flex:none; min-width:0; }
 </style>
 </head>
 <body>
@@ -479,136 +490,6 @@
           <text x="160" y="242" text-anchor="middle" class="berg-label bottom" font-size="12" opacity=".8">(โอกาสที่เสียไป)</text>
         </svg>
       </div>
-    </div>
-  </section>
-
-  <!-- 2: HIERARCHY OF PLANS -->
-  <section class="slide white" id="s-hop" data-title="Hierarchy of Plans">
-    <div class="eyebrow anim">STRATEGIC · TACTICAL · OPERATIONAL</div>
-    <h2 class="sec-title anim" style="margin-bottom:.3rem;">Hierarchy of Plans — จาก Industrial สู่ Platform Capitalism</h2>
-    <p class="sec-sub anim" style="margin-bottom:1.2rem;">โครงสร้างการวางแผน 3 ระดับ ที่เชื่อมทิศทางองค์กรลงมาถึงแพลตฟอร์มและโมเดลรายได้จริงที่ต้องส่งมอบ</p>
-
-    <div class="hop-stage anim pop">
-      <svg class="hop-bg" viewBox="0 0 1000 1000" preserveAspectRatio="none" aria-hidden="true">
-        <polygon points="500,15 25,985 975,985" fill="#CFE8F3" fill-opacity="0.55" stroke="#0B2545" stroke-width="3"/>
-        <line x1="500" y1="345" x2="500" y2="985" stroke="#9FB3C8" stroke-width="1.6"/>
-      </svg>
-      <div class="hop-content">
-
-        <div class="hop-apex">
-          <div class="ind">Industrial Capitalism</div>
-          <div class="hop-arrow"><svg viewBox="0 0 24 18"><polygon points="12,18 0,0 24,0" fill="#C0392B"/></svg></div>
-          <div class="row"><span class="hop-chk sq"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3"><path d="M5 13l4 4L19 7"/></svg></span>Platform Capitalization</div>
-          <div class="sub">Golive : 2573</div>
-          <div class="hop-arrow"><svg viewBox="0 0 24 18"><polygon points="12,18 0,0 24,0" fill="#F2A541"/></svg></div>
-          <div class="row"><span class="hop-chk ci"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3"><path d="M5 13l4 4L19 7"/></svg></span>Ecosystem</div>
-          <div class="sub">Golive : 2574</div>
-        </div>
-
-        <div class="hop-divider"><span class="lbl">Strategic Planning</span><span class="line"></span></div>
-
-        <div class="hop-row hop-strategic">
-          <div class="hop-kv"><b>Key Value :</b>Energy Saving · Power Guarantee · Zero Downtime · Long Assurance · Carbon Reduction</div>
-          <div class="hop-colhead tech">Technology Platform</div>
-          <div class="hop-colhead comm">Commercial &amp; Management Platform</div>
-          <div class="hop-kv"><b>Key Value :</b>Customer Engagement · Recurring Revenue · Ecosystem Collaboration · Business Value Creation</div>
-        </div>
-
-        <div class="hop-divider"><span class="lbl">Tactical Planning</span><span class="line"></span></div>
-
-        <div class="hop-row">
-          <div class="hop-cards-row">
-            <div class="hop-card">EMS Subscription<span class="hop-chk sq"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3"><path d="M5 13l4 4L19 7"/></svg></span></div>
-            <div class="hop-card">Carbon Management Fee<span class="hop-chk sq"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3"><path d="M5 13l4 4L19 7"/></svg></span></div>
-            <div class="hop-card">Digital Engineering Subscription<span class="hop-chk ci"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3"><path d="M5 13l4 4L19 7"/></svg></span></div>
-          </div>
-          <div class="hop-cards-row">
-            <div class="hop-card">Predictive Maintenance Fee<span class="hop-chk sq"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3"><path d="M5 13l4 4L19 7"/></svg></span></div>
-            <div class="hop-card">Long-term Service Agreement<span class="hop-chk sq"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3"><path d="M5 13l4 4L19 7"/></svg></span></div>
-            <div class="hop-card">AI Subscription<span class="hop-chk ci"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3"><path d="M5 13l4 4L19 7"/></svg></span></div>
-            <div class="hop-card">Financial Commission<span class="hop-chk ci"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3"><path d="M5 13l4 4L19 7"/></svg></span></div>
-            <div class="hop-card">Transaction Fee<span class="hop-chk ci"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3"><path d="M5 13l4 4L19 7"/></svg></span></div>
-            <div class="hop-card">Marketplace Commission<span class="hop-chk ci"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3"><path d="M5 13l4 4L19 7"/></svg></span></div>
-            <div class="hop-card">Service Retainer<span class="hop-chk ci"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3"><path d="M5 13l4 4L19 7"/></svg></span></div>
-          </div>
-        </div>
-
-        <div class="hop-divider"><span class="lbl">Operational Plan</span><span class="line"></span></div>
-
-        <div class="hop-row">
-          <div class="hop-plat-2col">
-            <div class="cell"><span class="hop-chk ci"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3"><path d="M5 13l4 4L19 7"/></svg></span>Digital Engineering Platform</div>
-            <div class="cell"><span class="hop-chk sq"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3"><path d="M5 13l4 4L19 7"/></svg></span>Energy Intelligence Platform (EMS)</div>
-          </div>
-          <div class="hop-plat-grid">
-            <div class="cell"><span class="hop-chk sq"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3"><path d="M5 13l4 4L19 7"/></svg></span>Project Management Business Platform</div>
-            <div class="cell"><span class="hop-chk sq"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3"><path d="M5 13l4 4L19 7"/></svg></span>Customer Engagement Platform</div>
-            <div class="cell"><span class="hop-chk sq"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3"><path d="M5 13l4 4L19 7"/></svg></span>Stakeholder Map</div>
-            <div class="cell"><span class="hop-chk sq"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3"><path d="M5 13l4 4L19 7"/></svg></span>Pricing Strategy</div>
-            <div class="cell"><span class="hop-chk ci"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3"><path d="M5 13l4 4L19 7"/></svg></span>Digital Commerce Platform</div>
-            <div class="cell"><span class="hop-chk ci"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3"><path d="M5 13l4 4L19 7"/></svg></span>Commercial Platform</div>
-            <div class="cell"><span class="hop-chk ci"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3"><path d="M5 13l4 4L19 7"/></svg></span>3rd-Party App Ecosystem</div>
-            <div class="cell"><span class="hop-chk ci"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3"><path d="M5 13l4 4L19 7"/></svg></span>Ecosystem &amp; Services</div>
-            <div class="cell"><span class="hop-chk ci"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3"><path d="M5 13l4 4L19 7"/></svg></span>Financing Platform</div>
-            <div class="cell"><span class="hop-chk sq"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3"><path d="M5 13l4 4L19 7"/></svg></span>Sale &amp; Operation Planning</div>
-          </div>
-        </div>
-
-      </div>
-    </div>
-  </section>
-
-  <!-- 2: ACTOR ORBIT (6 actors around TCS Platform) -->
-  <section class="slide alt" id="s-actors" data-title="Platform Actors">
-    <div class="orbit-head anim">
-      <div class="eyebrow" style="margin-bottom:2px;">ECOSYSTEM MAP</div>
-      <div class="why-h1" style="margin-bottom:0;">6 ACTORS รอบ TCS PLATFORM</div>
-      <p class="orbit-sub">คลิกที่ Actor แต่ละจุด เพื่อดู Use Case และกิจกรรมย่อยที่เกิดขึ้นจริงบน Platform</p>
-    </div>
-
-    <div class="orbit-stage anim pop">
-      <div class="orbit-ring"></div>
-
-      <div class="orbit-center">
-        <div class="disp">TCS<br>PLATFORM</div>
-        <span>5 Business Pillars · Core</span>
-      </div>
-
-      <div class="orbit-node n1" onclick="openActor('buyer')">
-        <div class="onum">01</div>
-        <div class="oname">Buyer</div>
-        <div class="otag">Asset Owner / Field Eng.</div>
-      </div>
-      <div class="orbit-node n2" onclick="openActor('precise')">
-        <div class="onum">02</div>
-        <div class="oname">Precise Business</div>
-        <div class="otag">Sales / DS / S&amp;OP / DE</div>
-      </div>
-      <div class="orbit-node n3 c-red" onclick="openActor('competitor')">
-        <div class="onum">03</div>
-        <div class="oname">Competitor</div>
-        <div class="otag">Tier 1–3 · Digital</div>
-      </div>
-      <div class="orbit-node n4 c-teal" onclick="openActor('admin')">
-        <div class="onum">04</div>
-        <div class="oname">Platform Admin / PDE</div>
-        <div class="otag">Cyber · Cloud · AI Layer</div>
-      </div>
-      <div class="orbit-node n5" onclick="openActor('complementor')">
-        <div class="onum">05</div>
-        <div class="oname">Complementor</div>
-        <div class="otag">Regulator · Gov't · Finance</div>
-      </div>
-      <div class="orbit-node n6 c-teal" onclick="openActor('partners')">
-        <div class="onum">06</div>
-        <div class="oname">Partners / Supplier</div>
-        <div class="otag">Ecosystem · Marketplace</div>
-      </div>
-    </div>
-
-    <div class="orbit-hint anim">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 9a3 3 0 116 0c0 2-3 2-3 5M12 17.5h.01"/><circle cx="12" cy="12" r="10"/></svg>
-      <span>คลิกวงกลม Actor เพื่อดูรายละเอียด</span>
     </div>
   </section>
 
@@ -689,6 +570,137 @@
           </div>
         </div>
       </div>
+    </div>
+  </section>
+
+  <!-- 2: HIERARCHY OF PLANS -->
+  <section class="slide white" id="s-hop" data-title="Hierarchy of Plans">
+    <div class="eyebrow anim">STRATEGIC · TACTICAL · OPERATIONAL</div>
+    <h2 class="sec-title anim" style="margin-bottom:.3rem;">Hierarchy of Plans — จาก Industrial สู่ Platform Capitalism</h2>
+    <p class="sec-sub anim" style="margin-bottom:1.2rem;">โครงสร้างการวางแผน 3 ระดับ ที่เชื่อมทิศทางองค์กรลงมาถึงแพลตฟอร์มและโมเดลรายได้จริงที่ต้องส่งมอบ</p>
+
+    <div class="hop-stage anim pop" id="hopStage">
+      <svg class="hop-bg" viewBox="0 0 1000 1000" preserveAspectRatio="none" aria-hidden="true">
+        <polygon id="hopBgTriangle" points="500,15 25,880 975,880" fill="#CFE8F3" fill-opacity="0.55" stroke="#0B2545" stroke-width="3"/>
+        <line id="hopBgLine" x1="500" y1="260" x2="500" y2="880" stroke="#9FB3C8" stroke-width="1.6"/>
+      </svg>
+      <div class="hop-content">
+
+        <div class="hop-apex">
+          <div class="ind">Industrial Capitalism</div>
+          <div class="hop-arrow"><svg viewBox="0 0 24 18"><polygon points="12,18 0,0 24,0" fill="#C0392B"/></svg></div>
+          <div class="row"><span class="hop-chk sq"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3"><path d="M5 13l4 4L19 7"/></svg></span>Platform Capitalization</div>
+          <div class="sub">Golive : 2573</div>
+          <div class="hop-arrow"><svg viewBox="0 0 24 18"><polygon points="12,18 0,0 24,0" fill="#F2A541"/></svg></div>
+          <div class="row"><span class="hop-chk ci"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3"><path d="M5 13l4 4L19 7"/></svg></span>Ecosystem</div>
+          <div class="sub">Golive : 2574</div>
+        </div>
+
+        <div class="hop-divider" id="hopDividerStrategic"><span class="lbl">Strategic Planning</span><span class="line"></span></div>
+
+        <div class="hop-row hop-strategic">
+          <div class="hop-kv"><b>Key Value :</b>Energy Saving · Power Guarantee · Zero Downtime · Long Assurance · Carbon Reduction</div>
+          <div class="hop-colhead tech">Technology Platform</div>
+          <div class="hop-colhead comm">Commercial &amp; Management Platform</div>
+          <div class="hop-kv"><b>Key Value :</b>Customer Engagement · Recurring Revenue · Ecosystem Collaboration · Business Value Creation</div>
+        </div>
+
+        <div class="hop-divider"><span class="lbl">Tactical Planning</span><span class="line"></span></div>
+
+        <div class="hop-row hop-operational">
+          <div class="hop-op-half">
+            <div class="hop-cards-flank">
+              <div class="hop-card">EMS Subscription<span class="hop-chk sq"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3"><path d="M5 13l4 4L19 7"/></svg></span></div>
+              <div class="hop-card">Carbon Management Fee<span class="hop-chk sq"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3"><path d="M5 13l4 4L19 7"/></svg></span></div>
+              <div class="hop-card">Digital Engineering Subscription<span class="hop-chk ci"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3"><path d="M5 13l4 4L19 7"/></svg></span></div>
+            </div>
+            <div class="hop-plat-2col">
+              <div class="cell"><span class="hop-chk ci"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3"><path d="M5 13l4 4L19 7"/></svg></span>Digital Engineering Platform</div>
+              <div class="cell"><span class="hop-chk sq"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3"><path d="M5 13l4 4L19 7"/></svg></span>Energy Intelligence Platform (EMS)</div>
+            </div>
+          </div>
+          <div class="hop-op-half">
+            <div class="hop-plat-grid">
+              <div class="cell"><span class="hop-chk sq"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3"><path d="M5 13l4 4L19 7"/></svg></span>Project Management Business Platform</div>
+              <div class="cell"><span class="hop-chk sq"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3"><path d="M5 13l4 4L19 7"/></svg></span>Customer Engagement Platform</div>
+              <div class="cell"><span class="hop-chk sq"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3"><path d="M5 13l4 4L19 7"/></svg></span>Stakeholder Platform</div>
+              <div class="cell"><span class="hop-chk sq"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3"><path d="M5 13l4 4L19 7"/></svg></span>Pricing Strategy Platform</div>
+              <div class="cell"><span class="hop-chk ci"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3"><path d="M5 13l4 4L19 7"/></svg></span>Digital Commerce Platform</div>
+              <div class="cell"><span class="hop-chk ci"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3"><path d="M5 13l4 4L19 7"/></svg></span>Commercial Platform</div>
+              <div class="cell"><span class="hop-chk ci"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3"><path d="M5 13l4 4L19 7"/></svg></span>3rd-Party App Ecosystem Platform</div>
+              <div class="cell"><span class="hop-chk ci"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3"><path d="M5 13l4 4L19 7"/></svg></span>Platform</div>
+              <div class="cell"><span class="hop-chk ci"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3"><path d="M5 13l4 4L19 7"/></svg></span>Financing Platform</div>
+              <div class="cell"><span class="hop-chk sq"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3"><path d="M5 13l4 4L19 7"/></svg></span>Sale &amp; Operation Planning Platform</div>
+            </div>
+            <div class="hop-cards-flank">
+              <div class="hop-card">Predictive Maintenance Fee<span class="hop-chk sq"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3"><path d="M5 13l4 4L19 7"/></svg></span></div>
+              <div class="hop-card">Long-term Service Agreement<span class="hop-chk sq"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3"><path d="M5 13l4 4L19 7"/></svg></span></div>
+              <div class="hop-card">AI Subscription<span class="hop-chk ci"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3"><path d="M5 13l4 4L19 7"/></svg></span></div>
+              <div class="hop-card">Financial Commission<span class="hop-chk ci"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3"><path d="M5 13l4 4L19 7"/></svg></span></div>
+              <div class="hop-card">Transaction Fee<span class="hop-chk ci"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3"><path d="M5 13l4 4L19 7"/></svg></span></div>
+              <div class="hop-card">Marketplace Commission<span class="hop-chk ci"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3"><path d="M5 13l4 4L19 7"/></svg></span></div>
+              <div class="hop-card">Service Retainer<span class="hop-chk ci"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3"><path d="M5 13l4 4L19 7"/></svg></span></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="hop-divider" id="hopDividerFooter" style="margin-top:.4rem;"><span class="lbl">Operational Plan</span><span class="line"></span></div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- 2: ACTOR ORBIT (6 actors around TCS Platform) -->
+  <section class="slide alt" id="s-actors" data-title="Platform Actors">
+    <div class="orbit-head anim">
+      <div class="eyebrow" style="margin-bottom:2px;">ECOSYSTEM MAP</div>
+      <div class="why-h1" style="margin-bottom:0;">TCS PLATFORM</div>
+      <p class="orbit-sub">คลิกที่ Actor แต่ละจุด เพื่อดู Use Case และกิจกรรมย่อยที่เกิดขึ้นจริงบน Platform</p>
+    </div>
+
+    <div class="orbit-stage anim pop">
+      <div class="orbit-ring"></div>
+
+      <div class="orbit-center">
+        <div class="disp">TCS<br>PLATFORM</div>
+        <span>5 Business Pillars · Core</span>
+      </div>
+
+      <div class="orbit-node n1" onclick="openActor('buyer')">
+        <div class="onum">01</div>
+        <div class="oname">Buyer</div>
+        <div class="otag">Asset Owner</div>
+      </div>
+      <div class="orbit-node n2" onclick="openActor('precise')">
+        <div class="onum">02</div>
+        <div class="oname">Precise Business</div>
+        <div class="otag">Sales / DS / S&amp;OP / DE</div>
+      </div>
+      <div class="orbit-node n3 c-red" onclick="openActor('competitor')">
+        <div class="onum">03</div>
+        <div class="oname">Competitor</div>
+        <div class="otag">By Business Pillar</div>
+      </div>
+      <div class="orbit-node n4 c-teal" onclick="openActor('admin')">
+        <div class="onum">04</div>
+        <div class="oname">Platform Admin</div>
+        <div class="otag">Cyber · Cloud · AI Layer</div>
+      </div>
+      <div class="orbit-node n5" onclick="openActor('complementor')">
+        <div class="onum">05</div>
+        <div class="oname">Complementor</div>
+        <div class="otag">Regulator · Gov't · Finance</div>
+      </div>
+      <div class="orbit-node n6 c-teal" onclick="openActor('partners')">
+        <div class="onum">06</div>
+        <div class="oname">Partners / Supplier</div>
+        <div class="otag">Ecosystem · Marketplace</div>
+      </div>
+    </div>
+
+    <div class="orbit-hint anim">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 9a3 3 0 116 0c0 2-3 2-3 5M12 17.5h.01"/><circle cx="12" cy="12" r="10"/></svg>
+      <span>คลิกวงกลม Actor เพื่อดูรายละเอียด</span>
     </div>
   </section>
 
@@ -1115,21 +1127,19 @@ Subscription นับฐานใหม่จาก PO ที่ขายตั
       desc: 'ผู้ใช้งานปลายทางของ Platform ตั้งแต่ผู้ตัดสินใจลงทุนถึงทีมหน้างาน',
       groups: [
         { h: 'Asset Owner', items: [
-          'ให้ข้อมูล requirement เริ่มต้นผ่าน <b>Systems Modeling &amp; Requirements</b> ก่อนเริ่มโครงการ',
-          'รับการดูแลแบบรู้จักตัวตนผ่าน <b>Customer Engagement Platform (CRM/Loyalty)</b>',
-          'ติดตามข้อมูลพลังงาน/ต้นทุนแบบเรียลไทม์ผ่าน <b>EMS (IoT Data Management)</b>',
-          'รับคำแนะนำลดใช้พลังงานจาก <b>Energy Procurement Platform</b>',
+          'ให้ข้อมูล requirement เริ่มต้นผ่าน <b>Digital Engineering Platform</b> ก่อนเริ่มโครงการ',
+          'รับการดูแลแบบรู้จักตัวตนผ่าน <b>Customer Engagement Platform</b>',
+          'ติดตามข้อมูลพลังงาน/ต้นทุนแบบเรียลไทม์ผ่าน <b>Energy Intelligence Platform (EMS)</b>',
+          'รับคำแนะนำลดใช้พลังงานจาก <b>Energy Intelligence Platform (EMS)</b>',
           'สั่งซื้ออะไหล่/อุปกรณ์เสริมเองผ่าน <b>Digital Commerce Platform</b> ไม่ต้องรอ Sales ติดต่อกลับ',
           'เข้าถึงแหล่งทุนผ่าน <b>Financing Platform</b> เมื่อต้องการอัปเกรดระบบโดยไม่มีงบ CAPEX ก้อนใหญ่',
-          'ขอรายงาน ESG/Carbon Footprint จาก <b>ESG &amp; Carbon Commercial Platform</b> ไปยื่น regulator/ผู้ถือหุ้น',
-          'ต่อสัญญา/ขยายขอบเขตผ่าน <b>Asset Lifecycle Management Platform</b> เมื่อครบรอบ'
-        ]},
-        { h: 'Field Engineer / Technician', items: [
-          'รับ Alert ล่วงหน้าจาก <b>Digital / Predictive Maintenance</b> เมื่อระบบพยากรณ์พบความเสี่ยง',
+          'ขอรายงาน ESG/Carbon Footprint จาก <b>Energy Intelligence Platform (EMS)</b> ไปยื่น regulator/ผู้ถือหุ้น',
+          'ต่อสัญญา/ขยายขอบเขตผ่าน <b>Energy Intelligence Platform (EMS)</b> เมื่อครบรอบ',
+          'รับ Alert ล่วงหน้าจาก <b>Energy Intelligence Platform (EMS)</b> เมื่อระบบพยากรณ์พบความเสี่ยง',
           'ตรวจสอบข้อมูลอ้างอิงจาก <b>Digital Twin</b> ก่อนลงพื้นที่',
-          'ตัดสินใจแก้ปัญหาหน้างานได้เองผ่าน <b>Grid Edge / Field Devices</b> แม้สื่อสารกับศูนย์กลางขาด',
-          'ซ่อม/แก้ปัญหาแล้วบันทึกผลกลับเข้าระบบผ่าน <b>Monitoring, Reporting &amp; Event Resolution</b>',
-          'ตรวจสอบสถานะเซ็นเซอร์/มิเตอร์ผ่าน <b>Connectivity &amp; Edge Management</b> ไม่ให้มีจุดบอดข้อมูล'
+          'ตัดสินใจแก้ปัญหาหน้างานได้เองผ่าน <b>Energy Intelligence Platform (EMS)</b> แม้สื่อสารกับศูนย์กลางขาด',
+          'ซ่อม/แก้ปัญหาแล้วบันทึกผลกลับเข้าระบบผ่าน <b>Asset Lifecycle Management Platform</b>',
+          'ตรวจสอบสถานะเซ็นเซอร์/มิเตอร์ผ่าน <b>Energy Intelligence Platform (EMS)</b>'
         ]}
       ]
     },
@@ -1139,57 +1149,57 @@ Subscription นับฐานใหม่จาก PO ที่ขายตั
       desc: 'ทีมภายในที่แปลง Requirement ของลูกค้าให้กลายเป็นดีล โครงการ และมาตรฐานที่ใช้ซ้ำได้',
       groups: [
         { h: 'TCS Sales / KA / Pre-sale Team', items: [
-          'วิเคราะห์ผู้มีส่วนได้ส่วนเสียในองค์กรลูกค้าผ่าน <b>Stakeholder Map</b>',
-          'เลือกแนวทางตั้งราคาผ่าน <b>Pricing Strategy</b> (Cost-plus / Value-based / Outcome-based) มุมมอง External',
-          'ประสาน <b>Sale &amp; Operation Planning</b> ให้มั่นใจว่าสิ่งที่สัญญากับลูกค้าผลิต/ส่งมอบได้จริง',
-          'ใช้ข้อมูล Loyalty จาก <b>Customer Engagement Platform</b> วางแผน Cross-sell ข้าม 5 Pillar',
-          'วิเคราะห์ลูกค้าว่าเป็นไปตามรูปแบบลูกค้าในอุดมคติ',
-          'ใช้ข้อมูลลูกค้าและประวัติการซื้อเพื่อเพิ่มโอกาสในการขาย'
+          'วิเคราะห์ผู้มีส่วนได้ส่วนเสีย และผู้มีอิทธิพลต่อการตัดสินใจของลูกค้า เพื่อกำหนดกลยุทธ์การเข้าหาลูกค้าอย่างเหมาะสมผ่าน <b>Stakeholders Platform</b>',
+          'ดึงข้อมูล Pre-Solution ผ่าน <b>Stakeholders Platform</b> เพื่อจบความต้องการลูกค้า',
+          'กำหนดกลยุทธ์ราคาให้สอดคล้องกับสถานการณ์การแข่งขันและความต้องการของลูกค้า ผ่าน <b>Pricing Strategy Platform</b>',
+          'ประสานงานระหว่างฝ่ายขาย วิศวกรรม จัดซื้อ ผลิต และบริการ เพื่อให้มั่นใจว่าสามารถส่งมอบตามข้อเสนอได้จริงผ่าน <b>Sale &amp; Operation Planning Platform</b>',
+          'รู้จักลูกค้าแต่ละรายในทุก Pillar ที่ซื้อ เพื่อดูแลและเสนอสิ่งที่เหมาะสมในจังหวะที่ใช่ผ่าน <b>Customer Engagement Platform</b>',
+          'ใช้ข้อมูล Customer Loyalty และ Customer Insights เพื่อวางแผน Cross-selling และ Upselling ข้ามทั้ง 5 Business Pillars ผ่าน <b>Customer Engagement Platform</b>',
+          'วิเคราะห์ลูกค้าว่าเป็นไปตามรูปแบบลูกค้าเป้าหมาย TAL List จาก <b>Customer Engagement Platform</b>',
+          'ใช้ข้อมูลลูกค้าและประวัติการซื้อเพื่อเพิ่มโอกาสในการขาย จาก <b>Customer Engagement Platform</b>'
         ]},
         { h: 'Demand Satisfaction Team', items: [
-          'รับ Scope จาก Sales มาแตกเป็นชิ้นงานผ่าน <b>Architecture Design</b>',
-          'พิสูจน์ความถูกต้องก่อนลงทุนจริงผ่าน <b>Simulation &amp; Virtual Validation</b>',
-          'บริหารโครงการหลายฝ่าย (PRECISE + EPC + Partner + ลูกค้า) ผ่าน <b>Project Management Business Platform</b>',
-          'ประสานกับ <b>Sale &amp; Operation Planning</b> ป้องกัน Over/Under Production หรือ Backorder'
+          'รับ Scope จาก Sales มาแตกเป็นชิ้นงานผ่าน <b>Architecture Design Platform</b>',
+          'พิสูจน์ความถูกต้องก่อนลงทุนจริงผ่าน <b>Simulation &amp; Virtual Validation Platform</b>',
+          'บริหารโครงการหลายฝ่ายให้ตรง Scope/เวลา/งบ ผ่าน <b>Project Management Business Platform</b>',
+          'ส่งข้อมูลป้องกัน Over/Under Production หรือ Backorder ผ่าน <b>Sale &amp; Operation Planning Platform</b>'
         ]},
         { h: 'S&amp;OP', items: [
-          'ดึงรายการวัสดุ-ราคามาตรฐานจาก <b>BOQ Standardization Engine</b> ทำ Proposal เร็วขึ้น',
-          'ออกใบเสนอราคาผ่าน <b>Commercial Platform</b> (Quotation/PO)',
-          'เลือกแนวทางตั้งราคาผ่าน <b>Pricing Strategy</b> มุมมอง External &amp; Internal',
-          'ตรวจสอบว่า Timeline ที่ Sales เพิ่งปิดดีล ไม่ชนกับโครงการ EPC อื่นที่กำลังทำอยู่',
-          'จัดสรร Engineer/ทีมติดตั้ง/Subcontractor ข้ามโครงการผ่าน <b>Project Management Business Platform</b>',
-          'ป้อนข้อมูล Lead-time จริงกลับเข้า <b>BOQ Standardization Engine</b> ให้ประเมินโครงการถัดไปแม่นยำขึ้น'
+          'ดึงเอกสารทางเทคนิค และรายการวัสดุ-ราคามาตรฐาน เพื่อจัดใบเสนอราคาได้รวดเร็วและถูกต้อง จาก <b>Technical and Commercial Platform</b>',
+          'กำหนดกลยุทธ์ราคาให้สอดคล้องกับสถานการณ์ ผ่าน <b>Pricing Strategy Platform</b>',
+          'ตรวจสอบและจัดสรรวางแผนความสอดคล้องระหว่างแผนขาย แผนผลิต/สต๊อก และกำลังการติดตั้ง ผ่าน <b>Sale &amp; Operation Planning Platform</b>'
         ]},
         { h: 'Digital Engineering Team', items: [
-          'บันทึกความต้องการลูกค้าไว้ทั้งหมดผ่าน <b>Systems Modeling &amp; Requirements</b> ไม่ให้ตกหล่นตั้งแต่ก้าวแรก',
-          'ออกแบบความต้องการลูกค้าเป็นชิ้นงานที่ลงมือทำได้จริงผ่าน <b>Architecture Design</b>',
+          'บันทึกความต้องการลูกค้าทั้งหมดผ่าน <b>Systems Modeling &amp; Requirements</b> ไม่ให้ตกหล่นตั้งแต่ก้าวแรก',
+          'แตกความต้องการเป็นแผนงานที่ลงมือทำได้จริงและออกแบบผ่าน <b>Architecture Design</b>',
           'ทดลอง/พิสูจน์ความถูกต้องในคอมพิวเตอร์ก่อนลงทุนจริงผ่าน <b>Simulation &amp; Virtual Validation</b>',
-          'เชื่อมข้อมูลข้ามทีม (ไฟฟ้า/เครื่องกล/ซอฟต์แวร์/การผลิต) ผ่าน <b>Integration</b>',
+          'เชื่อม 3 ฟังก์ชันข้างต้น (Requirements, Architecture, Simulation) เป็น data ecosystem เดียวผ่าน <b>Integration</b> ให้ทุกทีม (ไฟฟ้า/เครื่องกล/ซอฟต์แวร์/การผลิต) เห็นข้อมูลชุดเดียวกัน',
           'สร้างแบบจำลองเสมือนที่ตามรอยได้ตลอดวงจรผ่าน <b>Digital Twin</b>',
-          'รับรองมาตรฐานความปลอดภัยทุกขั้นตอนผ่าน <b>Functional Safety &amp; Compliance Traceability</b>',
-          'อ้างอิงมาตรฐาน/สเปกเดิมจากโครงการก่อนหน้าผ่าน <b>Standards &amp; Compliance Repository</b>',
-          'ใช้ <b>BOQ Standardization Engine</b> ร่วมกับ Sales ตอนทำ Proposal'
+          'บันทึกทุกขั้นตอนออกแบบและตรวจสอบย้อนกลับได้ตามมาตรฐานความปลอดภัยผ่าน <b>Functional Safety &amp; Compliance Traceability</b>',
+          'เก็บมาตรฐาน/สเปกทุกโครงการไว้เป็นฐานข้อมูลกลางผ่าน <b>Standards &amp; Compliance Repository</b> และใช้อ้างอิงเทียบเคียงในโครงการใหม่ๆ',
+          'ใช้ฐานข้อมูล BOQ กลางผ่าน <b>BOQ Standardization Engine</b> ร่วมกับทีม Sales ตอนทำ Proposal'
         ]}
       ]
     },
     competitor: {
       eyebrow: 'Actor 03',
       title: 'Competitor',
-      desc: 'ภูมิทัศน์คู่แข่งตั้งแต่ Global Leader ถึงผู้เล่นท้องถิ่น รวมคู่แข่งฝั่ง Digital Platform',
+      desc: 'Top Competitors ตามแต่ละ Business Pillar',
       tiers: [
-        { h: 'Tier 1 — Global Leaders', items: ['Schneider Electric','Siemens','ABB','Hitachi Energy','Eaton','GE Vernova'] },
-        { h: 'Tier 2 — Regional', items: ['LS Electric','Mitsubishi Electric','Fuji Electric','Hyosung','Hyundai Electric'] },
-        { h: 'Tier 3 — Thailand Local', items: ['ASEFA','PMK Group','CSE','QTC','B.Grimm Engineering (Project Integration)'] },
-        { h: 'Digital Competitors', items: ['Schneider EcoStruxure','Siemens Grid Software','ABB Ability','Hitachi Lumada','Eaton Brightlayer'] }
+        { h: '1. Power Distribution &amp; Transmission', items: ['Schneider Electric','Siemens','ABB','Hitachi Energy','LS Electric','Eaton','Mitsubishi Electric','ASEFA','PMK Group'] },
+        { h: '2. High-Quality Power System', items: ['Siemens','Hitachi Energy','GE Vernova'] },
+        { h: '3. Power Quality', items: ['Siemens','Danfoss','Delta Electronics','PQ Team'] },
+        { h: '4. Energy Conservation', items: ['Schneider Electric','Honeywell','Johnson Controls','Delta Electronics','MFEC'] },
+        { h: '5. Renewable Energy', items: ['Encom','SCG','Banpu','BGE'] }
       ]
     },
     admin: {
       eyebrow: 'Actor 04',
-      title: 'Platform Admin / PDE',
+      title: 'Platform Admin',
       desc: 'ทีมที่ดูแล "ฐาน" ของ Platform ให้ทุกระบบทำงานได้อย่างปลอดภัยและขยายตัวได้',
       groups: [
-        { h: 'Platform Admin / PDE', items: [
-          'ป้องกัน-ตรวจจับ-ตอบสนองภัยไซเบอร์ทุกชั้นระบบผ่าน <b>OT/IT Cyber Security Framework</b> (SCADA/EMS/Cloud/Field Devices)',
+        { h: 'Platform Admin', items: [
+          'ป้องกัน-ตรวจจับ-ตอบสนองภัยไซเบอร์ทุกชั้นระบบผ่าน <b>OT/IT Cyber Security Framework</b>',
           'ดูแล <b>Cloud/SaaS Infrastructure</b> ให้ทุก Platform ใช้งานได้ทุกที่ทุกเวลาแบบ Scalable',
           'กำกับดูแล <b>Embedded AI Capability Layer</b> ให้ฝังตัวถูกต้องสม่ำเสมอในทุก Sub-system'
         ]}
@@ -1258,6 +1268,30 @@ Subscription นับฐานใหม่จาก PO ที่ขายตั
     document.getElementById('actor-overlay').classList.remove('show');
   }
   window.addEventListener('keydown', e => { if(e.key === 'Escape') closeActor(); });
+
+  // ---- Hierarchy of Plans: dynamic triangle sizing (keeps triangle base flush with real content height) ----
+  function sizeHopTriangle(){
+    const stage = document.getElementById('hopStage');
+    const strat = document.getElementById('hopDividerStrategic');
+    const footer = document.getElementById('hopDividerFooter');
+    const poly = document.getElementById('hopBgTriangle');
+    const line = document.getElementById('hopBgLine');
+    if(!stage || !strat || !footer || !poly || !line) return;
+    const stageRect = stage.getBoundingClientRect();
+    const totalH = stageRect.height;
+    if(totalH <= 0) return;
+    const stratRect = strat.getBoundingClientRect();
+    const footerRect = footer.getBoundingClientRect();
+    const yStrat = ((stratRect.top + stratRect.height/2) - stageRect.top) / totalH * 1000;
+    const yBase = (footerRect.top - stageRect.top) / totalH * 1000;
+    poly.setAttribute('points', `500,15 25,${yBase.toFixed(1)} 975,${yBase.toFixed(1)}`);
+    line.setAttribute('y1', yStrat.toFixed(1));
+    line.setAttribute('y2', yBase.toFixed(1));
+  }
+  window.addEventListener('load', sizeHopTriangle);
+  window.addEventListener('resize', sizeHopTriangle);
+  setTimeout(sizeHopTriangle, 300);
+  setTimeout(sizeHopTriangle, 1000);
 
   render();
 </script>
